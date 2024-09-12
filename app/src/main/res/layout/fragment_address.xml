@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="16dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <ProgressBar
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/progress"
+                android:padding="20dp"
+                android:scaleY="5"
+                app:layout_constraintTop_toBottomOf="@+id/layoutToolBar"
+                android:max="100"
+                android:progress="40"/>
+            <!-- Permanent Address Section -->
+            <TextView
+                android:id="@+id/textViewPermanentAddress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/permanent_address"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="8dp"/>
+
+            <EditText
+                android:id="@+id/editTextPermanentHouseNo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/house_flat_no"
+                android:inputType="text"
+                android:layout_marginBottom="8dp"/>
+
+            <EditText
+                android:id="@+id/editTextPermanentStreetName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/street_name"
+                android:inputType="text"
+                android:layout_marginBottom="8dp"/>
+
+            <EditText
+                android:id="@+id/editTextPermanentColonyArea"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/colony_area"
+                android:inputType="text"
+                android:layout_marginBottom="8dp"/>
+
+            <EditText
+                android:id="@+id/editTextPermanentLandmark"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/land_mark"
+                android:inputType="text"
+                android:layout_marginBottom="8dp"/>
+
+            <Spinner
+                android:id="@+id/spinnerDistrict"
+                android:layout_width="match_parent"
+                android:spinnerMode="dialog"
+                android:layout_marginBottom="8dp"
+                style="@style/Widget.AppCompat.Spinner.Underlined"
+                android:layout_height="wrap_content" />
+
+
+            <EditText
+                android:id="@+id/editTextPermanentPinCode"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/pin_code"
+                android:inputType="number"
+                android:layout_marginBottom="16dp"/>
+
+            <!-- Present Address Section -->
+            <TextView
+                android:id="@+id/textViewPresentAddress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/present_address"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="8dp"/>
+
+            <CheckBox
+                android:id="@+id/checkBoxSameAddress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/check_if_present_and_permanent_address_is_the_same"
+                android:layout_marginBottom="16dp"/>
+
+            <EditText
+                android:id="@+id/editTextPresentHouseNo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/house_flat_no"
+                android:inputType="text"
+                android:layout_marginBottom="8dp"/>
+
+            <EditText
+                android:id="@+id/editTextPresentStreetName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/street_name"
+                android:inputType="text"
+                android:layout_marginBottom="8dp"/>
+
+            <EditText
+                android:id="@+id/editTextPresentColonyArea"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/colony_area"
+                android:inputType="text"
+                android:layout_marginBottom="8dp"/>
+
+            <EditText
+                android:id="@+id/editTextPresentLandmark"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/land_mark"
+                android:inputType="text"
+                android:layout_marginBottom="8dp"/>
+
+            <Spinner
+                android:id="@+id/spinnerTempDistrict"
+                android:layout_width="match_parent"
+                android:spinnerMode="dialog"
+                android:layout_marginBottom="8dp"
+                style="@style/Widget.AppCompat.Spinner.Underlined"
+                android:layout_height="wrap_content" />
+
+            <EditText
+                android:id="@+id/editTextPresentPinCode"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/pin_code"
+                android:inputType="number"/>
+
+            <LinearLayout
+                style="?android:attr/buttonBarStyle"
+                android:layout_width="match_parent"
+                android:orientation="horizontal"
+                android:layout_weight="2"
+                android:layout_marginTop="16dp"
+                android:layout_height="wrap_content">
+
+                <Button
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_width="0dp"
+                    android:id="@+id/prev"
+                    android:layout_margin="20dp"
+                    android:layout_weight="1"
+                    android:text="Previous"
+                    android:layout_height="wrap_content"></Button>
+
+                <Button
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:id="@+id/next"
+                    android:text="@string/next"
+                    android:layout_margin="20dp"
+                    android:layout_height="wrap_content">
+
+                </Button>
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+</layout>

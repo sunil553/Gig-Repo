@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/login_nav_graph"
+    app:startDestination="@id/loginActivity">
+
+    <activity
+        android:id="@+id/loginActivity"
+        android:name="com.llyod.task.activity.LoginActivity"
+        android:label="LoginActivity" />
+    <activity
+        android:id="@+id/gigWorkerActivity"
+        android:name="com.llyod.task.activity.GigWorkerActivity"
+        android:label="GigWorkerActivity" />
+</navigation>

@@ -1,0 +1,58 @@
+<resources>
+    <string name="app_name">Gig Details</string>
+    <string name="title">Country</string>
+    <string name="login_with_mobile_number">Login with Mobile Number</string>
+    <string name="enter_your_mobile_number">Enter your mobile number</string>
+    <string name="phone_number_input">Phone number input</string>
+    <string name="login">Login</string>
+    <string name="enter_otp">Enter OTP</string>
+    <string name="verify">Verify</string>
+    <string name="primary_aggregator_platform_company_name">Primary Aggregator/Platform/Company (Name) *</string>
+    <string name="company_name_dropdown">Company Name Dropdown</string>
+    <string name="aggregator_platform_company_worker_id">Aggregator/Platform/Company Worker ID *</string>
+    <string name="worker_id">Worker ID</string>
+    <string name="date_of_joining">Date Of Joining *</string>
+    <string name="enter_date_yyyy_mm_dd">Enter Date (YYYY-MM-DD)</string>
+    <string name="local_office_address_if_available">Local Office Address (if available)</string>
+    <string name="local_office_address">Local Office Address</string>
+    <string name="mobile_number_linked_bank_account_details">Mobile Number Linked Bank Account Details</string>
+    <string name="account_number">Account Number *</string>
+    <string name="ifsc_code">IFSC Code *</string>
+    <string name="branch">Branch *</string>
+    <string name="nominee_details">Nominee Details</string>
+    <string name="nominee_name">Nominee Name</string>
+    <string name="relation">Relation</string>
+    <string name="age">Age</string>
+    <string name="nominee_bank_account_details">Nominee Bank Account Details</string>
+    <string name="account_numbers">Account Number *</string>
+    <string name="next">Next</string>
+    <string name="permanent_address">Permanent Address</string>
+    <string name="house_flat_no">House/ Flat No *</string>
+    <string name="street_name">Street Name</string>
+    <string name="colony_area">Colony/ Area</string>
+    <string name="land_mark">Land Mark</string>
+    <string name="city_district">City/ District</string>
+    <string name="pin_code">Pin Code</string>
+    <string name="present_address">Present Address</string>
+    <string name="check_if_present_and_permanent_address_is_the_same">Check if Present and Permanent address is the same</string>
+
+    <!--    <string-array name="service_type">
+            <item>Select Type Of Service</item>
+            <item>Ride-sharing services</item>
+            <item>Food and grocery delivery services</item>
+            <item>Logistics services</item>
+            <item>E-marketplace</item>
+            <item>Professional services provider</item>
+            <item>Healthcare</item>
+            <item>Travel and hospitality</item>
+        </string-array>
+    <string-array name="qualification">
+        <item>Select Qualification</item>
+        <item>High School</item>
+        <item>Diploma</item>
+        <item>Bachelor\'s Degree</item>
+        <item>Master\'s Degree</item>
+        <item>Doctorate</item>
+        <item>Other</item>
+    </string-array>-->
+</resources>

@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:app="http://schemas.android.com/apk/res-auto">
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:layout_height="match_parent"
+        android:padding="16dp">
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:orientation="vertical"
+            android:layout_height="match_parent"
+            tools:ignore="UselessParent">
+
+            <ImageView
+                android:id="@+id/logo"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_gravity="center"
+                android:layout_marginBottom="24dp"
+                android:src="@drawable/tg_logo" />
+            <!-- Title TextView -->
+            <TextView
+                android:id="@+id/textViewTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/login_with_mobile_number"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="24dp"/>
+
+            <!-- Phone Number EditText -->
+            <EditText
+                android:id="@+id/editTextPhoneNumber"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/enter_your_mobile_number"
+                android:inputType="phone"
+                android:maxLength="10"
+                android:autofillHints="phone"
+                android:visibility="@{viewModel.otpFieldVisibility ? View.GONE : View.VISIBLE}"
+                android:maxLines="1"
+                android:text="@={viewModel.phoneNumber}"
+                android:importantForAccessibility="yes"
+                android:contentDescription="@string/phone_number_input"
+                android:layout_marginBottom="16dp"
+                tools:ignore="ContentDescription" />
+
+            <EditText
+                android:id="@+id/editTextValidateNumber"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/enter_otp"
+                android:text="@={viewModel.otpNumber}"
+                android:inputType="phone"
+                android:visibility="@{viewModel.otpFieldVisibility ? View.VISIBLE : View.GONE}"
+                android:maxLines="1"
+                android:onClick="@{() -> viewModel.getOtpForMobileNo()}"
+                android:maxLength="6"
+                android:importantForAccessibility="yes"
+                android:contentDescription="@string/phone_number_input"
+                android:layout_marginBottom="16dp"
+                tools:ignore="ContentDescription" />
+
+            <!-- Login Button -->
+            <Button
+                android:id="@+id/buttonVerify"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="@{viewModel.loginButtonVisibility ? View.GONE : View.VISIBLE}"
+                android:onClick="@{() -> viewModel.getOtpForMobileNo()}"
+                android:text="@string/verify" />
+
+            <!-- Login Button -->
+            <Button
+                android:id="@+id/buttonLogin"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="@{viewModel.loginButtonVisibility ? View.VISIBLE : View.GONE}"
+                android:onClick="@{() -> viewModel.login()}"
+                android:text="@string/login" />
+
+        </LinearLayout>
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:gravity="center_vertical"
+            android:layout_centerInParent="true"
+            android:layout_height="wrap_content">
+           <!-- <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:indeterminate="false"
+                android:visibility="@{viewModel.progressBarVisibility ? View.VISIBLE : View.GONE}"
+                android:progressDrawable="@drawable/custom_progress_bar"
+                android:background="@drawable/circle_shape"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:max="100"
+                android:progress="65" />-->
+            <com.airbnb.lottie.LottieAnimationView
+                android:id="@+id/progressBar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:lottie_rawRes="@raw/loading"
+                android:visibility="@{viewModel.progressBarVisibility ? View.VISIBLE : View.GONE}"
+                app:lottie_autoPlay="true"
+                app:lottie_loop="true"/>
+        </LinearLayout>
+
+    </RelativeLayout>
+
+    <data>
+        <import type="android.view.View" />
+        <variable name="viewModel"
+            type="com.llyod.task.viewmodel.LoginViewModel"/>
+    </data>
+</layout>

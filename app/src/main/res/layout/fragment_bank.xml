@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+<ScrollView
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <ProgressBar
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/progress"
+            android:padding="20dp"
+            android:scaleY="5"
+            app:layout_constraintTop_toBottomOf="@+id/layoutToolBar"
+            android:max="100"
+            android:progress="60"/>
+        <!-- Mobile Number Linked Bank Account Details Section -->
+        <TextView
+            android:id="@+id/textViewBankAccountDetails"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/mobile_number_linked_bank_account_details"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="16dp"/>
+
+        <EditText
+            android:id="@+id/editTextAccountNumber"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/account_number"
+            android:inputType="number"
+            android:layout_marginBottom="8dp"/>
+
+        <EditText
+            android:id="@+id/editTextIFSCCode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/ifsc_code"
+            android:inputType="text"
+            android:layout_marginBottom="8dp"/>
+
+        <EditText
+            android:id="@+id/editTextBranch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/branch"
+            android:inputType="text"
+            android:layout_marginBottom="16dp"/>
+
+        <!-- Nominee Details Section -->
+        <TextView
+            android:id="@+id/textViewNomineeDetails"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/nominee_details"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="16dp"/>
+
+        <EditText
+            android:id="@+id/editTextNomineeName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/nominee_name"
+            android:inputType="text"
+            android:layout_marginBottom="8dp"/>
+
+        <EditText
+            android:id="@+id/editTextNomineeRelation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/relation"
+            android:inputType="text"
+            android:layout_marginBottom="8dp"/>
+
+        <EditText
+            android:id="@+id/editTextNomineeAge"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/age"
+            android:inputType="number"
+            android:layout_marginBottom="16dp"/>
+
+        <!-- Nominee Bank Account Details Section -->
+        <TextView
+            android:id="@+id/textViewNomineeBankDetails"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/nominee_bank_account_details"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="16dp"/>
+
+        <EditText
+            android:id="@+id/editTextNomineeAccountNumber"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/account_numbers"
+            android:inputType="number"
+            android:layout_marginBottom="8dp"/>
+
+        <EditText
+            android:id="@+id/editTextNomineeIFSCCode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/ifsc_code"
+            android:inputType="text"
+            android:layout_marginBottom="8dp"/>
+
+        <EditText
+            android:id="@+id/editTextNomineeBranch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/branch"
+            android:inputType="text"/>
+
+        <LinearLayout
+            style="?android:attr/buttonBarStyle"
+            android:layout_width="match_parent"
+            android:orientation="horizontal"
+            android:layout_weight="2"
+            android:layout_marginTop="16dp"
+            android:layout_height="wrap_content">
+
+            <Button
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="0dp"
+                android:id="@+id/prev"
+                android:layout_margin="20dp"
+                android:layout_weight="1"
+                android:text="Previous"
+                android:layout_height="wrap_content" />
+
+            <Button
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:id="@+id/next"
+                android:text="@string/next"
+                android:layout_margin="20dp"
+                android:layout_height="wrap_content">
+
+            </Button>
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>
+
+</layout>

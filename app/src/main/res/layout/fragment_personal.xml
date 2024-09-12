@@ -1,0 +1,362 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools">
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <LinearLayout
+                    xmlns:tools="http://schemas.android.com/tools"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    tools:context=".MainActivity"
+                    tools:ignore="HardcodedText">
+                    <ProgressBar
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/progress"
+                        android:padding="20dp"
+                        android:scaleY="5"
+                        app:layout_constraintTop_toBottomOf="@+id/layoutToolBar"
+                        android:max="100"
+                        android:progress="20"/>
+
+                    <ImageView
+                        android:layout_width="200dp"
+                        android:id="@+id/image_view"
+                        android:src="@drawable/photo"
+                        android:layout_gravity="center"
+                        android:layout_height="200dp" />
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/worker_full_name_text_input_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        style="@style/TextInputLayoutTheme"
+                        android:hint="Worker Full Name As Aadhar"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintRight_toRightOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/worker_full_name_edit_text"
+                            android:layout_width="match_parent"
+                            android:singleLine="true"
+                            android:layout_height="wrap_content" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <RadioGroup
+                        android:id="@+id/gender_radio_group"
+                        android:layout_width="match_parent"
+                        android:text="Gender"
+                        android:padding="10dp"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+                        <TextView
+                            android:id="@+id/gender_type_header"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Gender: "
+                            />
+                        <RadioButton
+                            android:id="@+id/genderradioButton1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Male" />
+
+                        <RadioButton
+                            android:id="@+id/genderradioButton2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Female" />
+                        <RadioButton
+                            android:id="@+id/genderradioButton3"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Transgender" />
+                    </RadioGroup>
+                    <EditText
+                        android:id="@+id/dob_edit_text"
+                        android:layout_width="match_parent"
+                        android:singleLine="true"
+                        android:editable="false"
+                        android:focusable="false"
+                        android:hint="Date of Birth"
+                        android:layout_height="wrap_content">
+                    </EditText>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/aadhar_number_text_input_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:hint="Aadhar Number"
+                        style="@style/TextInputLayoutTheme"
+                        android:maxLength="12"
+                        android:inputType="number"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintRight_toRightOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/aadhar_number_edit_text"
+                            android:layout_width="match_parent"
+                            android:singleLine="true"
+                            android:inputType="number"
+                            android:maxLength="12"
+                            android:layout_height="wrap_content" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/pan_number_text_input_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:hint="PAN Number"
+                        android:maxLength="10"
+                        style="@style/TextInputLayoutTheme"
+                        android:inputType="numberDecimal"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintRight_toRightOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/pan_number_edit_text"
+                            android:layout_width="match_parent"
+                            android:singleLine="true"
+                            android:capitalize="characters"
+                            android:layout_height="wrap_content" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/mobile_number_text_input_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:hint="Mobile Number"
+                        android:maxLength="10"
+                        android:inputType="number"
+                        style="@style/TextInputLayoutTheme"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintRight_toRightOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/mobile_number_edit_text"
+                            android:layout_width="match_parent"
+                            android:singleLine="true"
+                            android:editable="false"
+                            android:clickable="false"
+                            android:layout_height="wrap_content" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <Spinner
+                        android:id="@+id/spinnerQualification"
+                        android:layout_width="match_parent"
+                        android:spinnerMode="dialog"
+                        style="@style/Widget.AppCompat.Spinner.Underlined"
+                        android:layout_height="wrap_content" />
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/email_number_text_input_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:hint="Email"
+                        android:maxLength="10"
+                        style="@style/TextInputLayoutTheme"
+
+                        android:inputType="textEmailAddress"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintRight_toRightOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/email_edit_text"
+                            android:layout_width="match_parent"
+                            android:singleLine="true"
+                            android:layout_height="wrap_content" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+
+
+                    <RadioGroup
+                        android:id="@+id/typeOfWorker"
+                        android:layout_width="match_parent"
+                        android:text="Type of Worker"
+                        android:padding="10dp"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+                        <TextView
+                            android:id="@+id/header"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Type of Worker: "
+                            />
+                        <RadioButton
+                            android:id="@+id/radioButton1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Driver" />
+
+                        <RadioButton
+                            android:id="@+id/radioButton2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Non Driver" />
+
+                    </RadioGroup>
+
+                    <RadioGroup
+                        android:id="@+id/vehicleTyperadioGroup"
+                        android:layout_width="match_parent"
+                        android:text="Type of Worker"
+                        android:padding="10dp"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+                        <TextView
+                            android:id="@+id/vehicle_type_header"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Vehicle Type: "
+                            />
+                        <RadioButton
+                            android:id="@+id/vehicelTyperadioButton1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Two wheeler" />
+
+                        <RadioButton
+                            android:id="@+id/vehicelTyperadioButton2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Three wheeler" />
+
+
+                        <RadioButton
+                            android:id="@+id/vehicelTyperadioButton3"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Four wheeler" />
+                    </RadioGroup>
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/working_type_text_input_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:hint="Working Type"
+                        android:maxLength="10"
+                        style="@style/TextInputLayoutTheme"
+                        android:inputType="number"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintRight_toRightOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/working_type_edit_text"
+                            android:layout_width="match_parent"
+                            android:singleLine="true"
+                            android:layout_height="wrap_content" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <Spinner
+                        android:id="@+id/type_of_service"
+                        android:layout_width="match_parent"
+                        android:spinnerMode="dialog"
+                        style="@style/Widget.AppCompat.Spinner.Underlined"
+                        android:layout_height="wrap_content" />
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/working_days_text_input_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:hint="No Of Working Hours/Day"
+                        android:maxLength="10"
+                        style="@style/TextInputLayoutTheme"
+
+                        android:inputType="textEmailAddress"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintRight_toRightOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/working_days_edit_text"
+                            android:layout_width="match_parent"
+                            android:singleLine="true"
+                            android:inputType="number"
+                            android:layout_height="wrap_content" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/father_text_input_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:hint="Father's Name"
+                        android:maxLength="25"
+                        style="@style/TextInputLayoutTheme"
+                        android:inputType="number"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintRight_toRightOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/father_edit_text"
+                            android:layout_width="match_parent"
+                            android:singleLine="true"
+                            android:layout_height="wrap_content" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+                    <Button
+                        style="?android:attr/buttonBarButtonStyle"
+                        android:id="@+id/btn_next"
+                        android:layout_gravity="center"
+                        android:text="@string/next"
+                        android:gravity="center"
+                        android:layout_width="wrap_content"
+                        android:layout_margin="20dp"
+                        android:layout_height="wrap_content">
+                    </Button>
+
+                </LinearLayout>
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="wrap_content"
+                    android:gravity="center_vertical"
+                    android:layout_centerInParent="true"
+                    android:layout_height="wrap_content">
+                    <ProgressBar
+                        android:id="@+id/progressBar"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:indeterminate="false"
+                        android:visibility="gone"
+                        android:progressDrawable="@drawable/custom_progress_bar"
+                        android:background="@drawable/circle_shape"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:max="100"
+                        android:progress="65" />
+                </LinearLayout>
+            </RelativeLayout>
+        </ScrollView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

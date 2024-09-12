@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/personalFragment">
+
+    <fragment
+        android:id="@+id/addressFragment"
+        android:name="com.llyod.task.fragment.AddressFragment"
+        android:label="AddressFragment" >
+        <action
+            android:id="@+id/action_addressFragment_to_bankFragment"
+            app:destination="@id/bankFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/personalFragment"
+        android:name="com.llyod.task.fragment.PersonalFragment"
+        android:label="PersonalFragment" >
+        <action
+            android:id="@+id/action_personalFragment_to_addressFragment"
+            app:destination="@id/addressFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/bankFragment"
+        android:name="com.llyod.task.fragment.BankFragment"
+        android:label="BankFragment" >
+        <action
+            android:id="@+id/action_bankFragment_to_companyFragment"
+            app:destination="@id/companyFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/companyFragment"
+        android:name="com.llyod.task.fragment.CompanyFragment"
+        android:label="CompanyFragment" >
+        <action
+            android:id="@+id/action_companyFragment_to_dashboardFragment"
+            app:destination="@id/dashboardFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/dashboardFragment"
+        android:name="com.llyod.task.fragment.DashboardFragment"
+        android:label="DashboardFragment" />
+</navigation>
