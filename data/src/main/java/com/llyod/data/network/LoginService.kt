@@ -28,6 +28,7 @@ import retrofit2.http.Path
 
 
 interface LoginService {
+/*
     @Headers("Content-Type: application/json")
     @POST("/sendotp/")
     suspend fun sendOtp(@Body body : UserMobileData) : Response<UserMobileOtpResponse>
@@ -37,6 +38,7 @@ interface LoginService {
     @POST("/verifyotp/")
     suspend fun verifyOtp(@Body body : VerifyRequest) : Response<VerifyReponse>
 
+*/
 
 
     @Headers("Content-Type: application/json")
@@ -45,40 +47,40 @@ interface LoginService {
 
     @POST("add/user/")
     suspend fun registerUser(
-        @Header("Authorization") token: String,
+        /*@Header("Authorization") token: String,*/
         @Body file: MultipartBody, /*@Body requestBody: RegisterRequestModel*/
     ) : Response<RegisterResponse>
 
     @GET("/get/states/")
     @Headers("Content-Type: application/json")
-    suspend fun getStates(@Header("Authorization") token: String) : Response<StatesModelResponse>
+    suspend fun getStates() : Response<StatesModelResponse>
 
 
     @GET("/get/districts/{id}")
     @Headers("Content-Type: application/json")
-    suspend fun getDistrictByStateId(@Header("Authorization") token: String, @Path("id") searchById:String)  : Response<DistrictsForStatesResponse>
+    suspend fun getDistrictByStateId(@Path("id") searchById:String)  : Response<DistrictsForStatesResponse>
 
 
     @GET("/get/qualifications/")
     @Headers("Content-Type: application/json")
-    suspend fun getQualificationTypes(@Header("Authorization") token: String) : Response<QualificationResponse>
+    suspend fun getQualificationTypes() : Response<QualificationResponse>
 
     @GET("/get/services/")
     @Headers("Content-Type: application/json")
-    suspend fun getServices(@Header("Authorization") token: String) : Response<ServiceResponse>
+    suspend fun getServices() : Response<ServiceResponse>
 
     @GET("/get/vehicletypes/")
     @Headers("Content-Type: application/json")
-    suspend fun getVehicleTypes(@Header("Authorization") token: String) : Response<VehicleTypeResponse>
+    suspend fun getVehicleTypes() : Response<VehicleTypeResponse>
 
     @GET("/get/companies/")
     @Headers("Content-Type: application/json")
-    suspend fun getCompanies(@Header("Authorization") token: String) : Response<CompanyReponse>
+    suspend fun getCompanies() : Response<CompanyReponse>
 
 
     @GET("/get/user/")
     @Headers("Content-Type: application/json")
-    suspend fun getRegisteredUser(@Header("Authorization") token: String) : Response<RegisteredUserResponse>
+    suspend fun getRegisteredUser() : Response<RegisteredUserResponse>
 
 
     @Multipart

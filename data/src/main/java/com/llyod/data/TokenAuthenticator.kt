@@ -1,15 +1,22 @@
 package com.llyod.data
 
+import android.util.Log
 import com.llyod.data.network.LoginService
 import com.llyod.data.network.TokenService
 import com.llyod.data.repository.UserPreferencesRepo
+import com.llyod.domain.common.Result
+import com.llyod.domain.common.Result.Success
+import com.llyod.domain.exception.NotFoundException
+import com.llyod.domain.exception.UnAuthorizedApi
 import com.llyod.domain.model.access.RefreshTokenRequest
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import okhttp3.Authenticator
+import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import okhttp3.Route
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Inject
@@ -24,9 +31,8 @@ class TokenAuthenticator @Inject constructor(
             } else {
                 getExistingSessionData()
             }
-
             return response.request.newBuilder()
-                .header("Authorization", "Bearer "+userPreferencesRepo.getString("ACCESS_TOKEN",""))
+                .header("Authorization", "Bearer "+userPreferencesRepo.getString(ACCESS_TOKEN,""))
                 .build()
         }
     }
@@ -51,26 +57,35 @@ class TokenAuthenticator @Inject constructor(
         val refreshTokenRequest =
             userPreferencesRepo.getString(REFRESH_TOKEN, "")
         val resfreshToken = RefreshTokenRequest(refreshTokenRequest)
-        return when (val result = userApiService().getAccessToken(resfreshToken).isSuccessful ) {
-            true -> {
-                userPreferencesRepo.saveString(ACCESS_TOKEN,result.toString())
-//                userPreferencesRepo.saveString("REFRESH_TOKEN",sessionData.refreshId)
-                delay(50)
-                true
+        val response = userApiService().getAccessToken(resfreshToken)
+        Log.e("response",response.toString())
+        if (response.isSuccessful) {
+            if (response.isSuccessful) {
+                response.body()?.let { session ->
+                    userPreferencesRepo.saveString(ACCESS_TOKEN,session.access)
+                }
+                return true
+            } else {
+                return  false
             }
-            false ->{
-                false
-            }
+        } else{
+            return false
         }
     }
 
 
-    private fun userApiService(): TokenService {
+    private fun userApiService(): LoginService {
+        val loggingInterceptor = HttpLoggingInterceptor()
+        loggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
+        val okHttpClient = OkHttpClient.Builder().addInterceptor(loggingInterceptor).build()
+
         val retrofit = Retrofit.Builder()
             .baseUrl("http://13.233.163.123:8008")
             .addConverterFactory(GsonConverterFactory.create())
+            .client(okHttpClient)
             .build()
-        return retrofit.create(TokenService::class.java)
+
+        return retrofit.create(LoginService::class.java)
     }
     companion object {
         const val ACCESS_TOKEN = "ACCESS_TOKEN"

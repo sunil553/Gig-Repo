@@ -45,11 +45,12 @@ object DataSourceModule {
     @Singleton
     fun provideLoginDataSource(
         loginService: LoginService,
-//        tokenService: TokenService,
+        tokenService: TokenService,
          userPreferencesRepo: UserPreferencesRepo,
         networkStatus: NetworkStatus,
     ): LoginDataSource {
         return LoginDataSourceImpl(
+            tokenService,
             loginService,
 //            tokenService,
             networkStatus,

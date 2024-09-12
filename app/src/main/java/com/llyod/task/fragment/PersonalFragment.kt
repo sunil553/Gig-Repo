@@ -1,12 +1,17 @@
 package com.llyod.task.fragment
 
+import android.Manifest
+import android.Manifest.permission.READ_MEDIA_IMAGES
+import android.Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED
 import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.LayoutInflater
@@ -20,7 +25,9 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity.RESULT_OK
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
@@ -91,6 +98,7 @@ class PersonalFragment : Fragment() {
         _binding = FragmentPersonalBinding.inflate(inflater, container, false)
         return binding.root
     }
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -114,14 +122,33 @@ class PersonalFragment : Fragment() {
         }
 
         _binding?.imageView?.setOnClickListener {
+            if (
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+                (
+                        ContextCompat.checkSelfPermission(requireContext(), READ_MEDIA_IMAGES) == PERMISSION_GRANTED)
+            ) {
+                // Full access on Android 13 (API level 33) or higher
+                showCameraGalleryDialog(requireContext())
+            }
+            if (
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE &&
+                ContextCompat.checkSelfPermission(requireContext(), READ_MEDIA_VISUAL_USER_SELECTED) == PERMISSION_GRANTED
+            ) {
+                showCameraGalleryDialog(requireContext())
+            }
             if (requireContext().checkSelfPermission(android.Manifest.permission.CAMERA) ==
                 PackageManager.PERMISSION_DENIED ||
                 requireContext().checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 == PackageManager.PERMISSION_DENIED
+//                ||
+//                requireContext().checkSelfPermission(Manifest.permission.READ_MEDIA_IMAGES) == PackageManager.PERMISSION_DENIED ||
+//                requireContext().checkSelfPermission(Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED) == PackageManager.PERMISSION_DENIED
             ) {
                 val permission = arrayOf<String>(
                     android.Manifest.permission.CAMERA,
-                    android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+                    android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
+//                    Manifest.permission.READ_MEDIA_IMAGES,
+//                    Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED
                 )
                 requestPermissions(permission, 112)
             } else {

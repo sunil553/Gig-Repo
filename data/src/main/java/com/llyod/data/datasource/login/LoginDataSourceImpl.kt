@@ -1,10 +1,9 @@
 package com.llyod.data.datasource.login
 
 import com.llyod.data.TokenAuthenticator.Companion.ACCESS_TOKEN
-import com.llyod.data.TokenAuthenticator.Companion.BEARER
-import com.llyod.data.TokenAuthenticator.Companion.REFRESH_TOKEN
 import com.llyod.data.common.NetworkStatus
 import com.llyod.data.network.LoginService
+import com.llyod.data.network.TokenService
 import com.llyod.data.repository.UserPreferencesRepo
 import com.llyod.domain.common.Result
 import com.llyod.domain.common.Result.Success
@@ -31,14 +30,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
-import okhttp3.MultipartBody.Companion.FORM
-import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.asRequestBody
-import java.io.File
 import javax.inject.Inject
 
 
 class LoginDataSourceImpl @Inject constructor(
+    private val tokenService: TokenService,
     private val loginService: LoginService,
     private val networkStatus: NetworkStatus,
     private val userPreferencesRepo: UserPreferencesRepo,
@@ -50,7 +47,7 @@ class LoginDataSourceImpl @Inject constructor(
         return try {
             if (networkStatus.isOnline()) {
                 withContext(ioDispatcher) {
-                    val response = loginService.verifyOtp(verifyRequest)
+                    val response = tokenService.verifyOtp(verifyRequest)
                     if (response.isSuccessful) {
                         if (response.isSuccessful) {
                             return@withContext Success(response.body())
@@ -74,7 +71,7 @@ class LoginDataSourceImpl @Inject constructor(
             if (networkStatus.isOnline()) {
                 withContext(ioDispatcher) {
                     val userMobileData = UserMobileData(mobileNumber)
-                    val response = loginService.sendOtp(userMobileData)
+                    val response = tokenService.sendOtp(userMobileData)
                     if (response.isSuccessful) {
                         if (response.isSuccessful) {
                             return@withContext Success(response.body())
@@ -125,8 +122,7 @@ class LoginDataSourceImpl @Inject constructor(
         return try {
             if (networkStatus.isOnline()) {
                 withContext(ioDispatcher) {
-                    val response = loginService.getStates(token = BEARER+userPreferencesRepo.getString(
-                        ACCESS_TOKEN,""))
+                    val response = loginService.getStates()
                     if (response.isSuccessful) {
                         if (response.isSuccessful) {
                             return@withContext Success(response.body())
@@ -149,7 +145,7 @@ class LoginDataSourceImpl @Inject constructor(
         return try {
             if (networkStatus.isOnline()) {
                 withContext(ioDispatcher) {
-                    val response = loginService.getDistrictByStateId(token = BEARER+userPreferencesRepo.getString(ACCESS_TOKEN,""),stateId)
+                    val response = loginService.getDistrictByStateId(stateId)
                     if (response.isSuccessful) {
                         if (response.isSuccessful) {
                             return@withContext Success(response.body())
@@ -171,7 +167,7 @@ class LoginDataSourceImpl @Inject constructor(
         return try {
             if (networkStatus.isOnline()) {
                 withContext(ioDispatcher) {
-                    val response = loginService.getServices(token = BEARER+userPreferencesRepo.getString(ACCESS_TOKEN,""))
+                    val response = loginService.getServices()
                     if (response.isSuccessful) {
                         if (response.isSuccessful) {
                             return@withContext Success(response.body())
@@ -193,7 +189,7 @@ class LoginDataSourceImpl @Inject constructor(
         return try {
             if (networkStatus.isOnline()) {
                 withContext(ioDispatcher) {
-                    val response = loginService.getVehicleTypes(token = BEARER+userPreferencesRepo.getString(ACCESS_TOKEN,""))
+                    val response = loginService.getVehicleTypes()
                     if (response.isSuccessful) {
                         if (response.isSuccessful) {
                             return@withContext Success(response.body())
@@ -215,7 +211,7 @@ class LoginDataSourceImpl @Inject constructor(
         return try {
             if (networkStatus.isOnline()) {
                 withContext(ioDispatcher) {
-                    val response = loginService.getQualificationTypes(token = BEARER+userPreferencesRepo.getString(ACCESS_TOKEN,""))
+                    val response = loginService.getQualificationTypes()
                     if (response.isSuccessful) {
                         if (response.isSuccessful) {
                             return@withContext Success(response.body())
@@ -237,8 +233,7 @@ class LoginDataSourceImpl @Inject constructor(
         return try {
             if (networkStatus.isOnline()) {
                 withContext(ioDispatcher) {
-                    val response = loginService.getCompanies(token = BEARER+userPreferencesRepo.getString(
-                        ACCESS_TOKEN,""))
+                    val response = loginService.getCompanies()
                     if (response.isSuccessful) {
                         if (response.isSuccessful) {
                             return@withContext Success(response.body())
@@ -260,11 +255,8 @@ class LoginDataSourceImpl @Inject constructor(
         return try {
             if (networkStatus.isOnline()) {
                 withContext(ioDispatcher) {
-//                    val requestBody = buildPostman(registerRequestModel)
                     val requestBody = buildData(registerRequestModel)
-//                    val response = loginService.registerUser(token = BEARER+userPreferencesRepo.getString(ACCESS_TOKEN,""),registerRequestModel)
-                    val response = loginService.registerUser(token = BEARER+userPreferencesRepo.getString(ACCESS_TOKEN,""),requestBody)
-//                    val response = loginService.registerUser(token = BEARER+userPreferencesRepo.getString(ACCESS_TOKEN,""),requestBody)
+                    val response = loginService.registerUser(requestBody)
                     if (response.isSuccessful) {
                         return@withContext Success(response.body())
                     } else {
@@ -283,7 +275,7 @@ class LoginDataSourceImpl @Inject constructor(
         return try {
             if (networkStatus.isOnline()) {
                 withContext(ioDispatcher) {
-                    val response = loginService.getRegisteredUser(token = BEARER+userPreferencesRepo.getString(ACCESS_TOKEN,""))
+                    val response = loginService.getRegisteredUser()
                     if (response.isSuccessful) {
                         return@withContext Success(response.body())
                     } else {

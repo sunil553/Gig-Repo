@@ -33,6 +33,10 @@ object NetworkModule {
 
     @Qualifier
     @Retention(AnnotationRetention.RUNTIME)
+    annotation class AuthRetrofit
+
+    @Qualifier
+    @Retention(AnnotationRetention.RUNTIME)
     annotation class NonAuthOkHttpClient
 
     @Qualifier
@@ -51,12 +55,31 @@ object NetworkModule {
     @Retention(AnnotationRetention.RUNTIME)
     annotation class OAuthAuthenticator
 
+    @Qualifier
+    @Retention(AnnotationRetention.RUNTIME)
+    annotation class AuthOkHttpClient
+
 
     @Provides
     @NonAuthRetrofit
     @Singleton
     fun provideNonAuthRetrofit(
         @NonAuthOkHttpClient nonAuthOkHttpClient: OkHttpClient,
+        @CustomGsonWithTypeAdapters gson: Gson,
+    ): Retrofit {
+        return Retrofit.Builder()
+            .client(nonAuthOkHttpClient)
+            .baseUrl(BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create(gson))
+            .build()
+
+    }
+
+    @Provides
+    @AuthRetrofit
+    @Singleton
+    fun provideAuthRetrofit(
+        @AuthOkHttpClient nonAuthOkHttpClient: OkHttpClient,
         @CustomGsonWithTypeAdapters gson: Gson,
     ): Retrofit {
         return Retrofit.Builder()
@@ -80,15 +103,28 @@ object NetworkModule {
     fun provideNonAuthOkHttp(
         @HttpLoggingInterceptors loggingInterceptor: Interceptor,
         @OAuthAuthenticator authenticator: Authenticator,
-//        @OAuthInterceptors oAuthInterceptor: Interceptor
+        @OAuthInterceptors oAuthInterceptor: Interceptor
     ): OkHttpClient {
         return OkHttpClient
             .Builder()
             .connectTimeout(15, TimeUnit.SECONDS)
             .readTimeout(15,TimeUnit.SECONDS)
             .addInterceptor(loggingInterceptor)
-//            .addInterceptor(oAuthInterceptor)
+            .addInterceptor(oAuthInterceptor)
             .authenticator(authenticator)
+            .build()
+    }
+
+    @Provides
+    @AuthOkHttpClient
+    fun provideAuthOkHttp(
+        @HttpLoggingInterceptors loggingInterceptor: Interceptor,
+    ): OkHttpClient {
+        return OkHttpClient
+            .Builder()
+            .connectTimeout(15, TimeUnit.SECONDS)
+            .readTimeout(15,TimeUnit.SECONDS)
+            .addInterceptor(loggingInterceptor)
             .build()
     }
 
@@ -123,13 +159,13 @@ object NetworkModule {
             LoginService = retrofit.create(
         LoginService::class.java
     )
-    /*
+
         @Provides
         @Singleton
-        fun provideTokenService(@NonAuthRetrofit retrofit: Retrofit):
+        fun provideTokenService(@AuthRetrofit retrofit: Retrofit):
                 TokenService = retrofit.create(
             TokenService::class.java
-        )*/
+        )
 
 
     @Provides

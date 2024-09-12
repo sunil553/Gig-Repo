@@ -45,7 +45,7 @@ class LoginViewModel @Inject constructor(
         return mobileNo.length == 10
     }
     fun getAccessToken(): Boolean {
-        return userPreferencesRepository.getString(REFRESH_TOKEN,"").isNotEmpty()
+        return userPreferencesRepository.getString(MOBILE_NO,"").isNotEmpty()
     }
 
 
