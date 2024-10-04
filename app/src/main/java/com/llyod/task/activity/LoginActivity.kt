@@ -42,6 +42,7 @@ class LoginActivity : AppCompatActivity() {
             }
         } else {
             viewModel.loginLiveData.observe(this,::onLoginSuccess)
+            viewModel.showMessageLiveData.observe(this,::showOtpSendMessage)
         }
 
         viewModel.errorMessages.observe(this,::onErrorMessage)
@@ -86,6 +87,10 @@ class LoginActivity : AppCompatActivity() {
             }
         }
 
+    }
+
+    private fun showOtpSendMessage(message: String?) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 
     private fun onErrorMessage(errorMessage: String?) {

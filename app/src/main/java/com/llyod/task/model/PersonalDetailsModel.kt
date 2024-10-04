@@ -17,8 +17,10 @@ data class PersonalDetailsModel(
     val vehicleType : String?,
     val noOfHours : String?,
     val fatherName : String?,
-    val serviceType : String?
-)
+    val serviceType : String?,
+    val profile_photo : String?,
+
+    )
 
 data class AddressDetailsModel(
     val house_no: String = "",
@@ -52,6 +54,7 @@ data class BankDetailsModel(
 )
 
 data class CompanyDetailsModel(
+    val comapany_name : String?,
     val doj: String?,
     val primary_company: String?,
     val primary_working_id: String?,

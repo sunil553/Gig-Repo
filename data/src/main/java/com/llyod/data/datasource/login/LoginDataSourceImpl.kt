@@ -1,5 +1,10 @@
 package com.llyod.data.datasource.login
 
+import android.content.Context
+import android.widget.Toast
+import androidx.core.content.ContentProviderCompat.requireContext
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.llyod.data.TokenAuthenticator.Companion.ACCESS_TOKEN
 import com.llyod.data.common.NetworkStatus
 import com.llyod.data.network.LoginService
@@ -10,6 +15,7 @@ import com.llyod.domain.common.Result.Success
 import com.llyod.domain.exception.NoNetworkException
 import com.llyod.domain.exception.NotFoundException
 import com.llyod.domain.exception.UnAuthorizedApi
+import com.llyod.domain.model.ErrorResponse
 import com.llyod.domain.model.UserMobileData
 import com.llyod.domain.model.UserMobileOtpResponse
 import com.llyod.domain.model.access.AccessTokenResponse
@@ -35,6 +41,7 @@ import javax.inject.Inject
 
 
 class LoginDataSourceImpl @Inject constructor(
+    private val context : Context,
     private val tokenService: TokenService,
     private val loginService: LoginService,
     private val networkStatus: NetworkStatus,
@@ -260,6 +267,12 @@ class LoginDataSourceImpl @Inject constructor(
                     if (response.isSuccessful) {
                         return@withContext Success(response.body())
                     } else {
+                        val gson = Gson()
+                        val type = object : TypeToken<ErrorResponse>() {}.type
+                        var errorResponse: ErrorResponse? = gson.fromJson(response.errorBody()!!.charStream(), type)
+                        withContext(Dispatchers.Main){
+                            Toast.makeText(context, errorResponse?.message, Toast.LENGTH_SHORT).show()
+                        }
                         return@withContext Result.Error(UnAuthorizedApi())
                     }
                 }
@@ -311,7 +324,7 @@ class LoginDataSourceImpl @Inject constructor(
             .addFormDataPart("colony_area", registerRequestModel.colony_area!!)
             .addFormDataPart("landmark", registerRequestModel.landmark!!)
             .addFormDataPart("pincode", registerRequestModel.pincode!!)
-            .addFormDataPart("state", "36")
+            .addFormDataPart("state", registerRequestModel.state!!)
             .addFormDataPart("district", registerRequestModel.district!!)
             .addFormDataPart("is_address_same", registerRequestModel.is_address_same?:"")
             .addFormDataPart("temp_house_no", registerRequestModel.temp_house_no!!)

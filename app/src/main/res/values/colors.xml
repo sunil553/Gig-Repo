@@ -8,4 +8,10 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="colorPrimary">#73A5CE</color>
+    <color name="green_indicator">#388E3C</color>
+    <color name="red_indicator">#E91E63</color>
+    <color name="grey_indicator">#353333</color>
+    <color name="purple_indicator">#673AB7</color>
+    <color name="disable_indicator">#808080</color>
+    <color name="card_disable_indicator">#F8F3F3FF</color>
 </resources>

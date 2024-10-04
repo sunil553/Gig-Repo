@@ -79,12 +79,20 @@ dependencies {
     implementation(libs.androidx.retrofit2.gson.converter)
     implementation(libs.androidx.coil.compose)
 
+    implementation (libs.glide)
+    annotationProcessor (libs.compiler)
 
     implementation(libs.androidx.hilt.navigation.compose)
 
     implementation (libs.maps.compose)
 
     implementation (libs.lottie.compose)
+
+    implementation(libs.eazegraph)
+    implementation (libs.library)
+
+    implementation (libs.mpandroidchart)
+
 
     //compose
     implementation(libs.androidx.activity.compose)

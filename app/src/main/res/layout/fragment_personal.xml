@@ -19,12 +19,19 @@
                     android:orientation="vertical"
                     tools:context=".MainActivity"
                     tools:ignore="HardcodedText">
+
+                    <include android:id="@+id/progress_layout"
+                        layout="@layout/layout_progress_indicator">
+                    </include>
+
                     <ProgressBar
                         style="?android:attr/progressBarStyleHorizontal"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:id="@+id/progress"
+                        android:visibility="invisible"
                         android:padding="20dp"
+                        android:indeterminateTint="@color/purple_indicator"
                         android:scaleY="5"
                         app:layout_constraintTop_toBottomOf="@+id/layoutToolBar"
                         android:max="100"
@@ -42,7 +49,7 @@
                         android:layout_height="wrap_content"
                         android:layout_margin="10dp"
                         style="@style/TextInputLayoutTheme"
-                        android:hint="Worker Full Name As Aadhar"
+                        android:hint="Worker Full Name As Aadhaar"
                         app:layout_constraintLeft_toLeftOf="parent"
                         app:layout_constraintRight_toRightOf="parent"
                         app:layout_constraintTop_toTopOf="parent">
@@ -83,13 +90,15 @@
                             android:id="@+id/genderradioButton3"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Transgender" />
+                            android:text="Others" />
                     </RadioGroup>
                     <EditText
                         android:id="@+id/dob_edit_text"
                         android:layout_width="match_parent"
                         android:singleLine="true"
                         android:editable="false"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginEnd="10dp"
                         android:focusable="false"
                         android:hint="Date of Birth"
                         android:layout_height="wrap_content">
@@ -100,7 +109,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_margin="10dp"
-                        android:hint="Aadhar Number"
+                        android:hint="Aadhaar Number"
                         style="@style/TextInputLayoutTheme"
                         android:maxLength="12"
                         android:inputType="number"
@@ -136,6 +145,7 @@
                             android:id="@+id/pan_number_edit_text"
                             android:layout_width="match_parent"
                             android:singleLine="true"
+                            android:maxLength="10"
                             android:capitalize="characters"
                             android:layout_height="wrap_content" />
 
@@ -169,6 +179,8 @@
                         android:id="@+id/spinnerQualification"
                         android:layout_width="match_parent"
                         android:spinnerMode="dialog"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginEnd="10dp"
                         style="@style/Widget.AppCompat.Spinner.Underlined"
                         android:layout_height="wrap_content" />
 
@@ -260,8 +272,9 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_margin="10dp"
-                        android:hint="Working Type"
+                        android:hint="Provide Details"
                         android:maxLength="10"
+                        android:visibility="gone"
                         style="@style/TextInputLayoutTheme"
                         android:inputType="number"
                         app:layout_constraintLeft_toLeftOf="parent"
@@ -280,6 +293,8 @@
                         android:id="@+id/type_of_service"
                         android:layout_width="match_parent"
                         android:spinnerMode="dialog"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginEnd="10dp"
                         style="@style/Widget.AppCompat.Spinner.Underlined"
                         android:layout_height="wrap_content" />
 

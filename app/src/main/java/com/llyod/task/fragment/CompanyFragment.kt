@@ -8,11 +8,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.Spinner
 import android.widget.Toast
+import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.llyod.domain.model.form.CompanyReponse
+import com.llyod.domain.model.form.Detail
 import com.llyod.task.R
 import com.llyod.task.activity.GigWorkerActivity
 import com.llyod.task.databinding.FragmentCompanyBinding
@@ -33,7 +36,7 @@ class CompanyFragment : Fragment() {
 
     private val sharedViewModel: SharedViewModel by activityViewModels()
     private val calendar = Calendar.getInstance()
-    var primaryCompany = 0
+    var primaryCompany = -1
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -46,6 +49,12 @@ class CompanyFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+
+        sharedViewModel.companyModel?.let {
+            _binding?.editTextOfficeAddress?.setText(it.office_address)
+            _binding?.editTextDateOfJoining?.setText(it.doj)
+            _binding?.editTextWorkerId?.setText(it.primary_working_id)
+        }
 
         _binding?.next?.setOnClickListener {
             if (validateWorkerDetails()) {
@@ -60,6 +69,7 @@ class CompanyFragment : Fragment() {
 //            navigateToDetails()
         }
         _binding?.prev?.setOnClickListener {
+            saveCompanyDetails()
             findNavController().navigateUp()
         }
 
@@ -74,6 +84,26 @@ class CompanyFragment : Fragment() {
         }
         sharedViewModel.isRegisteredLiveData.observe(viewLifecycleOwner,::isRegisteredLiveData)
 
+        _binding?.progressLayout?.bar1?.setBackgroundColor(requireContext().resources.getColor(R.color.purple_indicator))
+        _binding?.progressLayout?.bar2?.setBackgroundColor(requireContext().resources.getColor(R.color.purple_indicator))
+        _binding?.progressLayout?.bar3?.setBackgroundColor(requireContext().resources.getColor(R.color.purple_indicator))
+        _binding?.progressLayout?.bar4?.setBackgroundColor(requireContext().resources.getColor(R.color.purple_indicator))
+        _binding?.progressLayout?.bar5?.setBackgroundColor(requireContext().resources.getColor (R.color.purple_indicator))
+
+        _binding?.progressLayout?.framelayout1?.background  = ResourcesCompat.getDrawable(resources, R.drawable.circle_purple, null)
+        _binding?.progressLayout?.framelayout2?.background =  ResourcesCompat.getDrawable(resources, R.drawable.circle_purple, null)
+        _binding?.progressLayout?.framelayout3?.background =  ResourcesCompat.getDrawable(resources, R.drawable.circle_purple, null)
+        _binding?.progressLayout?.framelayout4?.background =  ResourcesCompat.getDrawable(resources, R.drawable.circle_purple, null)
+
+    }
+
+    private fun saveCompanyDetails() {
+        sharedViewModel.saveCompanyDetails(
+            _binding!!.editTextDateOfJoining.text.toString(),
+            primaryCompany.toString(),
+            _binding!!.editTextWorkerId.text.toString(),
+            _binding!!.editTextOfficeAddress.text.toString()
+        )
     }
 
     private fun showDatePicker() {
@@ -105,7 +135,14 @@ class CompanyFragment : Fragment() {
                 _binding?.editTextOfficeAddress?.setText(it.office_address)
                 _binding?.editTextDateOfJoining?.setText(it.doj)
                 _binding?.editTextWorkerId?.setText(it.primary_working_id)
-                _binding?.spinnerCompanyName?.setSelection(2)
+                it.comapany_name?.let { it1 ->
+                    _binding?.spinnerCompanyName?.let { it2 ->
+                        selectSpinnerItemByValue(
+                            it2,
+                            it1
+                        )
+                    }
+                }
             }
         }
     }
@@ -141,15 +178,29 @@ class CompanyFragment : Fragment() {
 
     private fun validateWorkerDetails(): Boolean {
         val dateOfJoining = _binding!!.editTextDateOfJoining.text.toString()
-        val primaryCompany = primaryCompany.toString() // Assuming primaryCompany is already a String
         val workerId = _binding!!.editTextWorkerId.text.toString()
         val officeAddress = _binding!!.editTextOfficeAddress.text.toString()
 
-        if (dateOfJoining.isBlank() || workerId.isBlank() || officeAddress.isBlank()) {
+        if (primaryCompany == -1) {
             // Show error message or highlight empty fields
-            Toast.makeText(requireContext(), "Please fill in all fields", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), "Please Select Valid Company Name", Toast.LENGTH_SHORT).show()
             return false
         }
+        if (dateOfJoining.isBlank()) {
+            Toast.makeText(requireContext(), "Please enter date of joining", Toast.LENGTH_SHORT).show()
+            return false
+        }
+
+        if (workerId.isBlank()) {
+            Toast.makeText(requireContext(), "Please enter worker ID", Toast.LENGTH_SHORT).show()
+            return false
+        }
+
+        if (officeAddress.isBlank()) {
+            Toast.makeText(requireContext(), "Please enter office address", Toast.LENGTH_SHORT).show()
+            return false
+        }
+
 
         /*if (!isValidDate(dateOfJoining)) {
             // Show error message for invalid date format
@@ -185,20 +236,30 @@ class CompanyFragment : Fragment() {
     private fun getCompanyDetails(response: CompanyReponse?) {
         val details = response?.details?.map { it.name }
 
+        val toMutableList = details!!.toMutableList()
+        toMutableList.add(0,"Select Company")
+
         val adapter: ArrayAdapter<String> =
             ArrayAdapter<String>(
                 requireContext(),
                 android.R.layout.simple_spinner_dropdown_item,
-                details!!.toMutableList()
+                toMutableList
             )
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
 
         _binding?.spinnerCompanyName?.adapter = adapter
 
+
+
         _binding!!.spinnerCompanyName.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view:View?, position: Int, id: Long) {
                 val selectedItem = parent?.getItemAtPosition(position)
-                primaryCompany = response?.details?.filter { it.name == selectedItem }?.firstOrNull()?.id!!
+                if (selectedItem?.equals("Select Company") == true) {
+                    primaryCompany = -1
+                } else {
+                    primaryCompany =
+                        response?.details?.filter { it.name == selectedItem }?.firstOrNull()?.id!!
+                }
 
                 // Do something with the selected item
             }
@@ -206,9 +267,47 @@ class CompanyFragment : Fragment() {
             override fun onNothingSelected(parent: AdapterView<*>?) {
                 // Do something when nothing is selected
             }}
-
+        sharedViewModel.companyModel?.let {
+            it.comapany_name?.let { it1 ->
+                selectSpinnerItemByValueByList(binding.spinnerCompanyName,
+                    it1,response.details
+                )
+            }
+        }
 
     }
+
+    private fun selectSpinnerItemByValueByList(spnr: Spinner, value: String?, details: List<Detail>) {
+        try {
+            val adapter = spnr.adapter
+            val details =  details.filter { it.id.toString() == value }
+            for (position in 0 until adapter.count) {
+                if (adapter.getItem(position) == details.firstOrNull()?.name) {
+                    spnr.setSelection(position)
+                    return
+                }
+            }
+        }catch (exception : Exception){
+
+        }
+
+    }
+
+    private fun selectSpinnerItemByValue(spnr: Spinner, value: String) {
+        try {
+            val adapter = spnr.adapter
+            for (position in 0 until adapter.count) {
+                if (adapter.getItem(position) == value) {
+                    spnr.setSelection(position)
+                    return
+                }
+            }
+        }catch (exception : Exception) {
+
+        }
+
+    }
+
 
     private fun navigateToDetails() {
 //        findNavController().navigate(R.id.action_bankFragment_to_companyFragment)

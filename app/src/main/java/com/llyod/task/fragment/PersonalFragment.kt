@@ -1,6 +1,5 @@
 package com.llyod.task.fragment
 
-import android.Manifest
 import android.Manifest.permission.READ_MEDIA_IMAGES
 import android.Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED
 import android.app.AlertDialog
@@ -13,7 +12,12 @@ import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.provider.MediaStore
+import android.text.Editable
+import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,6 +25,7 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.RadioButton
+import android.widget.Spinner
 import android.widget.Toast
 import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.ActivityResultLauncher
@@ -28,28 +33,35 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity.RESULT_OK
 import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
+import com.bumptech.glide.Glide
 import com.google.android.material.snackbar.Snackbar
+import com.llyod.domain.model.form.Detail
 import com.llyod.domain.model.form.QualificationResponse
 import com.llyod.domain.model.form.ServiceResponse
 import com.llyod.task.R
 import com.llyod.task.common.Utils
+import com.llyod.task.common.Utils.convertBitmapToFile
+import com.llyod.task.common.Utils.loadBitmap
 import com.llyod.task.common.Utils.rotateBitmap
 import com.llyod.task.databinding.FragmentPersonalBinding
 import com.llyod.task.viewmodel.SharedViewModel
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Date
 import java.util.Locale
+import java.util.concurrent.Executors
 
 
 class PersonalFragment : Fragment() {
 
 
     private var qualificationType: Int = 0
-    private var servieType: Int? = 1
+    private var servieType: Int? = 0
     private lateinit var leftImageFile: File
     private var _binding: FragmentPersonalBinding? = null
     private val binding get() = _binding!!
@@ -57,7 +69,6 @@ class PersonalFragment : Fragment() {
 
     private val sharedViewModel: SharedViewModel by activityViewModels()
     var image_uri: Uri? = null
-    private val calendar = Calendar.getInstance()
     var typeOfWorker = ""
     var vehicleType = ""
     var gender = ""
@@ -69,8 +80,8 @@ class PersonalFragment : Fragment() {
                 image_uri = it.data?.data
                 val inputImage = Utils.uriToBitmap(requireContext(),image_uri!!)
                 val rotated = rotateBitmap(requireContext(), image_uri!!,inputImage!!)
-                val compressed  = Utils.getResizedBitmap(rotated,200)
-                leftImageFile = Utils.convertBitmapToFile(requireContext(),"gigworker", compressed)
+                val compressed  = Utils.getResizedBitmap(rotated,512)
+                leftImageFile = convertBitmapToFile(requireContext(),"gigworker", compressed)
                 binding.imageView.setImageBitmap(rotated)
             }
         }
@@ -83,8 +94,8 @@ class PersonalFragment : Fragment() {
         if (it.resultCode === RESULT_OK) {
             val inputImage = Utils.uriToBitmap(requireContext(),image_uri!!)
             val rotated = rotateBitmap(requireContext(), image_uri!!,inputImage!!)
-            val compressed  = Utils.getResizedBitmap(rotated,200)
-            leftImageFile = Utils.convertBitmapToFile(requireContext(),"gigworker", compressed)
+            val compressed  = Utils.getResizedBitmap(rotated,512)
+            leftImageFile = convertBitmapToFile(requireContext(),"gigworker", compressed)
             binding.imageView.setImageBitmap(compressed)
         }
     }
@@ -105,15 +116,42 @@ class PersonalFragment : Fragment() {
 
 
         sharedViewModel.personalDetailsModel?.let {
-            it?.photo?.let {
-                _binding?.imageView?.setImageURI(Uri.fromFile(it))
+            try {
+                leftImageFile = it.profile_photo?.let { it1 -> File(it1) }!!
+                Glide.with(this)
+                    .load(it.profile_photo)
+                    .into(_binding!!.imageView)
+            }catch (e : Exception){
+
             }
+            try {
+                it?.photo?.let {
+                    _binding?.imageView?.setImageURI(Uri.fromFile(it))
+                }
+            }catch (e: Exception) {
+                e.printStackTrace()
+            }
+
+            /* it?.photo?.let {
+                 _binding?.imageView?.setImageURI(Uri.fromFile(it))
+             }*/
             _binding!!.workerFullNameEditText.setText(it.name)
             _binding!!.dobEditText.setText(it.dob)
             _binding!!.aadharNumberEditText.setText(it.aadhar)
             _binding!!.mobileNumberEditText.setText(it.mobile)
             _binding!!.panNumberEditText.setText(it.pan)
             _binding!!.emailEditText.setText(it.email)
+
+            try {
+                selectSpinnerItem(_binding?.spinnerQualification!!, it.qualification?.toInt() ?: 0)
+            }catch (e :Exception){
+                it.qualification?.let { it1 ->
+                    selectSpinnerItemByValue(_binding?.spinnerQualification!!,
+                        it1
+                    )
+                }
+            }
+            selectSpinnerItem(_binding?.typeOfService!!, it.serviceType?.toInt() ?: 0)
 //            binding!!.genderRadioGroup.check(it1)
 //            _binding?.workingTypeEditText?.setText(it.typeOfWork)
 //            _binding?.vehicleTypeEditText?.setText(it.vehicleType)
@@ -165,15 +203,15 @@ class PersonalFragment : Fragment() {
         }
         _binding!!.genderRadioGroup.setOnCheckedChangeListener { radioGroup, id ->
             when (id) {
-                com.llyod.task.R.id.genderradioButton1 -> {
+                R.id.genderradioButton1 -> {
                     val radio: RadioButton = radioGroup.findViewById(id)
                     gender = radio.text.toString()
                 }
-                com.llyod.task.R.id.genderradioButton2 -> {
+                R.id.genderradioButton2 -> {
                     val radio: RadioButton = radioGroup.findViewById(id)
                     gender = radio.text.toString()
                 }
-                com.llyod.task.R.id.genderradioButton3 -> {
+                R.id.genderradioButton3 -> {
                     val radio: RadioButton = radioGroup.findViewById(id)
                     gender = radio.text.toString()
                 }
@@ -225,22 +263,130 @@ class PersonalFragment : Fragment() {
 
         sharedViewModel.getQualifications()
         sharedViewModel.getServiceType()
-        sharedViewModel.getRegisterUser()
+        sharedViewModel.getRegisterUser(requireContext())
 
 
         sharedViewModel.loading.observe(viewLifecycleOwner,::showLoader)
         sharedViewModel.qualificationLiveData.observe(viewLifecycleOwner,::qualificationData)
         sharedViewModel.servicesLiveData.observe(viewLifecycleOwner,::serviceTypeData)
-        sharedViewModel.isRegisteredLiveData.observe(viewLifecycleOwner,::isRegisteredLiveData)
         _binding?.mobileNumberEditText?.setText(sharedViewModel.getUserMobileNumberFromPref())
 
+        _binding!!.workingDaysEditText.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+
+            override fun afterTextChanged(s: Editable?) {
+                try {
+                    val input = s.toString().toInt()
+                    if (input == 0) {
+                        _binding!!.workingDaysEditText.setText("") // Set to minimum value
+                        _binding!!.workingDaysEditText.text?.length?.let {
+                            _binding!!.workingDaysEditText.setSelection(
+                                it
+                            )
+
+                        }
+                    } else if (input > 24) {
+                        _binding!!.workingDaysEditText.setText("23") // Set to maximum value
+                        _binding!!.workingDaysEditText.text?.length?.let {
+                            _binding!!.workingDaysEditText.setSelection(
+                                it
+                            )
+                        } // Move cursor to end
+                    }
+                } catch (e: NumberFormatException) {
+                    // Handle non-numeric input if needed
+                }
+            }
+        })
+
+        _binding?.progressLayout?.bar1?.setBackgroundColor(requireContext().resources.getColor(R.color.purple_indicator))
+        _binding?.progressLayout?.bar2?.setBackgroundColor(requireContext().resources.getColor(R.color.disable_indicator))
+        _binding?.progressLayout?.bar3?.setBackgroundColor(requireContext().resources.getColor(R.color.disable_indicator))
+        _binding?.progressLayout?.bar4?.setBackgroundColor(requireContext().resources.getColor(R.color.disable_indicator))
+
+        _binding?.progressLayout?.framelayout1?.background  = ResourcesCompat.getDrawable(resources, R.drawable.circle_purple, null)
+        _binding?.progressLayout?.framelayout2?.background =  ResourcesCompat.getDrawable(resources, R.drawable.circle_grey, null)
+        _binding?.progressLayout?.framelayout3?.background =  ResourcesCompat.getDrawable(resources, R.drawable.circle_grey, null)
+        _binding?.progressLayout?.framelayout4?.background =  ResourcesCompat.getDrawable(resources, R.drawable.circle_grey, null)
+
+        _binding?.progressLayout?.framelayout2?.setOnClickListener {
+            sharedViewModel.navigate(SharedViewModel.Navigator.ADDRESS)
+        }
+        _binding?.progressLayout?.framelayout3?.setOnClickListener {
+            sharedViewModel.navigate(SharedViewModel.Navigator.BANK)
+        }
+        _binding?.progressLayout?.framelayout4?.setOnClickListener {
+            sharedViewModel.navigate(SharedViewModel.Navigator.COMPANY)
+        }
+
+//        sharedViewModel.isNavigateLiveData.observe(viewLifecycleOwner,::navigate)
+    }
+
+    private fun navigate(navigator: SharedViewModel.Navigator?) {
+        when(navigator){
+            SharedViewModel.Navigator.ADDRESS -> {
+                findNavController().navigate(R.id.action_personalFragment_to_addressFragment)
+            }
+            SharedViewModel.Navigator.BANK -> {
+//                findNavController().navigate(R.id.action_personalFragment_to_bankFragment)
+            }
+            SharedViewModel.Navigator.COMPANY -> {
+//                findNavController().navigate(R.id.action_personalFragment_to_companyFragment)
+            }
+            SharedViewModel.Navigator.PERSONAL -> {
+//                findNavController().navigate(R.id.action_personalFragment_to_personalFragment)
+            }
+            null -> {
+            }
+        }
     }
 
     private fun isRegisteredLiveData(isRegisteredUser: Boolean?) {
         if (isRegisteredUser == true){
             sharedViewModel.personalDetailsModel?.let {
-                it?.photo?.let {
-                    _binding?.imageView?.setImageURI(Uri.fromFile(it))
+                _binding?.progressLayout?.bar1?.setBackgroundColor(requireContext().resources.getColor(R.color.purple_indicator))
+                _binding?.progressLayout?.bar2?.setBackgroundColor(requireContext().resources.getColor(R.color.purple_indicator))
+                _binding?.progressLayout?.bar3?.setBackgroundColor(requireContext().resources.getColor(R.color.purple_indicator))
+                _binding?.progressLayout?.bar4?.setBackgroundColor(requireContext().resources.getColor(R.color.purple_indicator))
+                _binding?.progressLayout?.bar5?.setBackgroundColor(requireContext().resources.getColor (R.color.purple_indicator))
+
+                _binding?.progressLayout?.framelayout1?.background  = ResourcesCompat.getDrawable(resources, R.drawable.circle_purple, null)
+                _binding?.progressLayout?.framelayout2?.background =  ResourcesCompat.getDrawable(resources, R.drawable.circle_purple, null)
+                _binding?.progressLayout?.framelayout3?.background =  ResourcesCompat.getDrawable(resources, R.drawable.circle_purple, null)
+                _binding?.progressLayout?.framelayout4?.background =  ResourcesCompat.getDrawable(resources, R.drawable.circle_purple, null)
+
+                /* it?.photo?.let {
+                     _binding?.imageView?.setImageURI(Uri.fromFile(it))
+                 }*/
+                try {
+                    Glide.with(this)
+                        .load(it.profile_photo)
+                        .into(_binding!!.imageView)
+// Declaring and initializing an Executor and a Handler
+                    val myExecutor = Executors.newSingleThreadExecutor()
+                    val myHandler = Handler(Looper.getMainLooper())
+                    myExecutor.execute {
+                        try {
+                            it.profile_photo?.let {
+                                val bitmap = loadBitmap(it)
+                                leftImageFile =
+                                    bitmap?.let { it1 ->
+                                        convertBitmapToFile(requireContext(),"gigworker",
+                                            it1
+                                        )
+                                    }!!
+                            }
+                        }catch (exception : Exception) {
+
+                        }
+
+
+                    }
+
+                }catch (e : Exception){
+
                 }
                 _binding!!.workerFullNameEditText.setText(it.name)
                 _binding!!.dobEditText.setText(it.dob)
@@ -264,9 +410,12 @@ class PersonalFragment : Fragment() {
 
                 if(it.gender.equals("Male", ignoreCase = true)) {
                     _binding?.genderRadioGroup?.check(R.id.genderradioButton1);
-                }else {
+                }else if (it.gender.equals("Female", ignoreCase = true)){
                     _binding?.genderRadioGroup?.check(R.id.genderradioButton1);
+                } else {
+                    _binding?.genderRadioGroup?.check(R.id.genderradioButton2);
                 }
+
                 if(it.vehicleType.equals("0", ignoreCase = true)) {
                     _binding?.vehicleTyperadioGroup?.check(R.id.vehicelTyperadioButton1);
                 }else {
@@ -274,12 +423,65 @@ class PersonalFragment : Fragment() {
                 }
                 _binding?.workingDaysEditText?.setText(it.noOfHours)
                 _binding?.fatherEditText?.setText(it.fatherName)
+                it.qualification?.let { it1 ->
+                    selectSpinnerItemByValue(binding.spinnerQualification,
+                        it1
+                    )
+                }
+                it.serviceType?.let { it1 ->
+                    sharedViewModel.getServiceResponse()?.details?.let { it2 ->
+                        selectSpinnerItemByValueByList(binding.typeOfService,
+                            it1,
+                            it2
+
+                        )
+                    }
+                }
             }
-            Snackbar.make(requireView(), "Already Registered User", Snackbar.LENGTH_LONG)
-                .setAction("CLOSE") { }
-                .setActionTextColor(resources.getColor(android.R.color.holo_red_light))
-                .show()
         }
+    }
+    private fun selectSpinnerItemByValueByList(spnr: Spinner, value: String?, details: List<Detail>) {
+        try {
+            val adapter = spnr.adapter
+            val details =  details.filter { it.id == value?.toInt() }
+            for (position in 0 until adapter.count) {
+                if (adapter.getItem(position) == details.firstOrNull()?.name) {
+                    spnr.setSelection(position)
+                    return
+                }
+            }
+        }catch (exception : Exception){
+
+        }
+
+    }
+    private fun selectSpinnerItemByValue(spnr: Spinner, value: String) {
+        try {
+            val adapter = spnr.adapter
+            for (position in 0 until adapter.count) {
+                if (adapter.getItem(position).toString().equals(value,ignoreCase = true)) {
+                    spnr.setSelection(position)
+                    return
+                }
+            }
+        }catch (exception : Exception){
+
+        }
+
+    }
+    private fun selectSpinnerItem(spnr: Spinner, value: Int) {
+        try {
+            val adapter = spnr.adapter
+            for (position in 0 until adapter.count) {
+                if (position == value) {
+                    spnr.setSelection(position)
+                    return
+                }
+            }
+        }catch (exception : Exception){
+
+        }
+
     }
 
 
@@ -304,7 +506,7 @@ class PersonalFragment : Fragment() {
         val pan = _binding!!.panNumberEditText.text.toString()
         val email = _binding!!.emailEditText.text.toString()
         val qualification = qualificationType
-        val serviceType = _binding?.typeOfService?.selectedItem.toString()
+        val serviceType = servieType
         val  typeOfWork = typeOfWorker
         val vehicleType = vehicleType
         val  noOfHours = _binding?.workingDaysEditText?.text.toString().trim()
@@ -319,6 +521,18 @@ class PersonalFragment : Fragment() {
             Toast.makeText(requireContext(), "Please select gender", Toast.LENGTH_SHORT).show()
             return false
         }
+        if (dob.isEmpty()){
+            Toast.makeText(requireContext(), "Please enter dob", Toast.LENGTH_SHORT).show()
+            return false
+        }
+        if(aadhar.isEmpty()){
+            Toast.makeText(requireContext(), "Please enter aadhaar number", Toast.LENGTH_SHORT).show()
+            return false
+        }
+        if(aadhar.length < 12){
+            Toast.makeText(requireContext(), "Please enter valid aadhaar number", Toast.LENGTH_SHORT).show()
+            return false
+        }
         if (!isValidEmail(email)){
             Toast.makeText(requireContext(), "Invalid Email", Toast.LENGTH_SHORT).show()
             return false
@@ -327,14 +541,22 @@ class PersonalFragment : Fragment() {
             Toast.makeText(requireContext(), "Please select qualification", Toast.LENGTH_SHORT).show()
             return false
         }
-        if (serviceType.isEmpty()){
+        if (serviceType == 0){
             Toast.makeText(requireContext(), "Please select service type", Toast.LENGTH_SHORT).show()
             return false
         }
-        if (vehicleType.isEmpty()){
-            Toast.makeText(requireContext(), "Please select vehicle type", Toast.LENGTH_SHORT).show()
-            return false
+        if (typeOfWork == "Driver") {
+            if (vehicleType.isEmpty()){
+                Toast.makeText(requireContext(), "Please select vehicle type", Toast.LENGTH_SHORT).show()
+                return false
+            }
+        } else if (typeOfWork == "Non Driver") {
+            if (_binding?.workingTypeEditText?.text?.toString()?.isEmpty() == true){
+                Toast.makeText(requireContext(), "Please select provide details", Toast.LENGTH_SHORT).show()
+                return false
+            }
         }
+
         if (mobile.isEmpty()){
             Toast.makeText(requireContext(), "Please enter mobile number", Toast.LENGTH_SHORT).show()
             return false
@@ -344,26 +566,35 @@ class PersonalFragment : Fragment() {
             return false
         }
         if (pan.isEmpty()){
-            Toast.makeText(requireContext(), "Please enter pan number", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), "Please enter PAN number", Toast.LENGTH_SHORT).show()
+            return false
+        }
+        if (!isValidPanNumber(pan)){
+            Toast.makeText(requireContext(), "Please enter valid PAN number", Toast.LENGTH_SHORT).show()
+            return false
+        }
+        if (fatherName.isEmpty()){
+            Toast.makeText(requireContext(), "Please enter father name", Toast.LENGTH_SHORT).show()
             return false
         }
 
-        if (noOfHours.isEmpty() || noOfHours.toInt() > 24 ){
-            Toast.makeText(requireContext(), "Please enter working hours", Toast.LENGTH_SHORT).show()
+        if (noOfHours.isEmpty() || noOfHours.toInt() > 23 ){
+            Toast.makeText(requireContext(), "Please enter working hours between 1 to 23", Toast.LENGTH_SHORT).show()
             return false
         }
-        if (::leftImageFile.isInitialized && name.isNotEmpty() && gender.isNotEmpty() && dob.isNotEmpty() && aadhar.isNotEmpty() && mobile.isNotEmpty() &&
-            pan.isNotEmpty() && email.isNotEmpty()  && typeOfWork.isNotEmpty()  &&
-            noOfHours.isNotEmpty() && fatherName.isNotEmpty()) {
+        if (::leftImageFile.isInitialized) {
             return true
         } else {
-            Toast.makeText(requireContext(), "Please fill all the fields", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), "Please upload photo", Toast.LENGTH_SHORT).show()
             return false
         }
 
 
     }
-
+    private fun isValidPanNumber(panNumber: String): Boolean {
+        val regex = Regex("[A-Z]{5}[0-9]{4}[A-Z]")
+        return regex.matches(panNumber)
+    }
     private fun isValidEmail(email: String): Boolean {
         return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
     }
@@ -371,28 +602,43 @@ class PersonalFragment : Fragment() {
     private fun serviceTypeData(response: ServiceResponse?) {
         val details = response?.details?.map { it.name }
 
+        val toMutableList = details!!.toMutableList()
+        toMutableList.add(0,"Type of Service")
         val adapter: ArrayAdapter<String> =
             ArrayAdapter<String>(
                 requireContext(),
                 android.R.layout.simple_spinner_dropdown_item,
-                details!!.toMutableList()
+                toMutableList
             )
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
 
         _binding?.typeOfService?.adapter = adapter
-        _binding?.typeOfService?.prompt = "Select One"
-
         _binding!!.typeOfService.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view:View?, position: Int, id: Long) {
-                val selectedItem = parent?.getItemAtPosition(position)
-                servieType = response?.details?.filter { it.name == selectedItem }?.firstOrNull()?.id
 
+                val selectedItem = parent?.getItemAtPosition(position)
+                if (selectedItem?.equals("Type of Service") == true) {
+                    servieType = 0
+//                    Toast.makeText(requireContext(), "Please select a valid Service", Toast.LENGTH_SHORT).show();
+                } else {
+                    servieType =
+                        response?.details?.filter { it.name == selectedItem }?.firstOrNull()?.id
+                }
                 // Do something with the selected item
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
                 // Do something when nothing is selected
             }}
+
+        sharedViewModel.personalDetailsModel?.let { personal ->
+            response?.details?.let {
+                selectSpinnerItemByValueByList(binding.typeOfService, personal.serviceType,
+                    response?.details!!
+                )
+            }
+        }
+        sharedViewModel.isRegisteredLiveData.observe(viewLifecycleOwner,::isRegisteredLiveData)
 
     }
 
@@ -400,21 +646,30 @@ class PersonalFragment : Fragment() {
     private fun qualificationData(response: QualificationResponse?) {
         val details = response?.details?.map { it.name }
 
+        val toMutableList = details!!.toMutableList()
+        toMutableList.add(0,"Select Qualification")
+
+
         val adapter: ArrayAdapter<String> =
             ArrayAdapter<String>(
                 requireContext(),
                 android.R.layout.simple_spinner_dropdown_item,
-                details!!.toMutableList()
+                toMutableList!!.toMutableList()
             )
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
 
         _binding?.spinnerQualification?.adapter = adapter
-        _binding?.spinnerQualification?.prompt = "Select One";
 
         _binding!!.spinnerQualification.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view:View?, position: Int, id: Long) {
                 val selectedItem = parent?.getItemAtPosition(position)
-                qualificationType = response?.details?.filter { it.name == selectedItem }?.firstOrNull()?.id!!
+                if (selectedItem?.equals("Select Qualification") == true) {
+                    qualificationType = 0
+//                    Toast.makeText(requireContext(), "Please select a valid Service", Toast.LENGTH_SHORT).show();
+                } else {
+                    qualificationType =
+                        response?.details?.filter { it.name == selectedItem }?.firstOrNull()?.id!!
+                }
                 // Do something with the selected item
             }
 
@@ -422,7 +677,13 @@ class PersonalFragment : Fragment() {
                 // Do something when nothing is selected
             }}
 
-
+        sharedViewModel.personalDetailsModel?.let { personal ->
+            response?.details?.let {
+                selectSpinnerItemByValueByList(binding.spinnerQualification, personal.qualification,
+                    response?.details!!
+                )
+            }
+        }
 
     }
 
@@ -451,19 +712,24 @@ class PersonalFragment : Fragment() {
     }
 
     private fun showDatePicker() {
+        val cal = Calendar.getInstance()
+        cal.add(Calendar.YEAR, -18)
+        cal.add(Calendar.DATE, -1);
+
         val datePickerDialog = DatePickerDialog(
-            requireContext(), {DatePicker, year: Int, monthOfYear: Int, dayOfMonth: Int ->
+            requireContext(), {
+                    DatePicker, year: Int, monthOfYear: Int, dayOfMonth: Int ->
                 val selectedDate = Calendar.getInstance()
                 selectedDate.set(year, monthOfYear, dayOfMonth)
                 val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
                 val formattedDate = dateFormat.format(selectedDate.time)
                 _binding!!.dobEditText.setText(formattedDate)
             },
-            calendar.get(Calendar.YEAR),
-            calendar.get(Calendar.MONTH),
-            calendar.get(Calendar.DAY_OF_MONTH)
+            cal.get(Calendar.YEAR),
+            cal.get(Calendar.MONTH),
+            cal.get(Calendar.DAY_OF_MONTH)
         )
-        datePickerDialog.datePicker.maxDate = System.currentTimeMillis()
+        datePickerDialog.datePicker.maxDate =   cal.timeInMillis
         datePickerDialog.show()
     }
     private fun openCamera() {
@@ -479,6 +745,7 @@ class PersonalFragment : Fragment() {
     private fun navigateToDetails() {
         sharedViewModel.savePersonalDetails(
             photo = leftImageFile,
+            profile_photo = null,
             name = _binding!!.workerFullNameEditText.text.toString(),
             gender = gender,
             dob = _binding!!.dobEditText.text.toString(),
@@ -509,6 +776,8 @@ class PersonalFragment : Fragment() {
         view.isFocusableInTouchMode = false
         view.setOnClickListener(null)
     }
+
+
 
 
 }

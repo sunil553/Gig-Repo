@@ -1,5 +1,6 @@
 package com.llyod.task.viewmodel
 
+import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -33,12 +34,14 @@ class SharedViewModel @Inject constructor(
 ) : ViewModel() {
 
 
-     var companyModel: CompanyDetailsModel? = null
-    private val mutableLiveData = MutableLiveData<RegisterRequestModel>()
-    val  liveData get() = mutableLiveData
+    private  var serviceResponse: ServiceResponse? = null
+    var companyModel: CompanyDetailsModel? = null
 
     private val _statesMutableLiveData = MutableLiveData<StatesModelResponse>()
     val  statesLiveData : LiveData<StatesModelResponse> get() = _statesMutableLiveData
+
+//    private val _statesTempMutableLiveData = MutableLiveData<StatesModelResponse>()
+//    val  statesTempLiveData : LiveData<StatesModelResponse> get() = _statesTempMutableLiveData
 
     private val _companyMutableLiveData = MutableLiveData<CompanyReponse>()
     val  companyLiveData : LiveData<CompanyReponse> get() = _companyMutableLiveData
@@ -52,6 +55,9 @@ class SharedViewModel @Inject constructor(
     private val _districtMutableLiveData = MutableLiveData<DistrictsForStatesResponse>()
     val  districtLiveData get() = _districtMutableLiveData
 
+    private val _districtTempMutableLiveData = MutableLiveData<DistrictsForStatesResponse>()
+    val  districtTempLiveData get() = _districtTempMutableLiveData
+
     private val _servicesMutableLiveData = MutableLiveData<ServiceResponse>()
     val  servicesLiveData get() = _servicesMutableLiveData
 
@@ -61,7 +67,7 @@ class SharedViewModel @Inject constructor(
     private val _isRegisteredLiveData = MutableLiveData<Boolean>()
     val  isRegisteredLiveData get() = _isRegisteredLiveData
 
-    private val _isRegisteredUserResponse = MutableLiveData<RegisteredUserResponse>()
+    private val _isRegisteredUserResponse = MutableLiveData<RegisteredUserResponse?>()
     val  isRegisteredUserResponse get() = _isRegisteredUserResponse
 
     var personalDetailsModel: PersonalDetailsModel? = null
@@ -77,6 +83,23 @@ class SharedViewModel @Inject constructor(
     val  loading : LiveData<Boolean> get() = _loading
 
     lateinit var districtsForStatesResponse : DistrictsForStatesResponse
+    lateinit var districtsTempForStatesResponse : DistrictsForStatesResponse
+
+
+    private val _isNavigateLiveData = MutableLiveData<Navigator>()
+    val  isNavigateLiveData get() = _isNavigateLiveData
+
+    sealed class Navigator{
+        object BANK : Navigator()
+        object COMPANY : Navigator()
+        object ADDRESS : Navigator()
+        object PERSONAL : Navigator()
+    }
+
+
+    fun getServiceResponse() : ServiceResponse?{
+        return serviceResponse
+    }
 
     companion object{
         private const val MOBILE_NO = "MOBILE_NO"
@@ -88,6 +111,7 @@ class SharedViewModel @Inject constructor(
 
     fun savePersonalDetails(
         photo : File?,
+        profile_photo : String?,
         name : String?,
         gender : String?,
         dob : String?,
@@ -118,7 +142,8 @@ class SharedViewModel @Inject constructor(
             vehicleType,
             noOfHours,
             fatherName,
-            serviceType
+            serviceType,
+            profile_photo
         )
     }
 
@@ -151,7 +176,7 @@ class SharedViewModel @Inject constructor(
                              primary_company: String?,
                              primary_working_id: String?,
                              office_address : String?){
-        companyModel =  CompanyDetailsModel(doj,primary_company,primary_working_id,office_address)
+        companyModel =  CompanyDetailsModel(comapany_name = primary_company,doj,primary_company,primary_working_id,office_address)
 
     }
 
@@ -228,6 +253,23 @@ class SharedViewModel @Inject constructor(
             }
         }
     }
+    fun getDistrictsByTempStateId() {
+        viewModelScope.launch {
+            _loading.postValue(true)
+            when(val response = configRepository.getDistricts("36")){
+                is Result.Error -> {
+                    _loading.postValue(false)
+                }
+                is Result.Success -> {
+                    _loading.postValue(false)
+                    districtsTempForStatesResponse = response.data!!
+                    response.data?.let {
+                        _districtTempMutableLiveData.postValue(response.data)
+                    }
+                }
+            }
+        }
+    }
 
     fun getServiceType() {
         viewModelScope.launch {
@@ -241,6 +283,7 @@ class SharedViewModel @Inject constructor(
                 is Result.Success -> {
                     _loading.postValue(false)
                     response.data?.let {
+                        serviceResponse = response.data
                         _servicesMutableLiveData.postValue(response.data)
                     }
                 }
@@ -312,12 +355,13 @@ class SharedViewModel @Inject constructor(
             }
         }
     }
-    fun getRegisterUser() {
+    fun getRegisterUser(requireContext: Context) {
         viewModelScope.launch {
             _loading.postValue(true)
             when(val responseFromServer = configRepository.getRegisteredUser()){
                 is Result.Error -> {
                     _loading.postValue(false)
+                    _isRegisteredUserResponse.postValue(null)
                 }
                 is Result.Success -> {
                     _loading.postValue(false)
@@ -326,10 +370,11 @@ class SharedViewModel @Inject constructor(
                         _isRegisteredUserResponse.postValue(it)
                         savePersonalDetails(
                             photo = null,
+                            profile_photo = it.personal_details.profile_image,
                             name = it.personal_details.name,
                             gender = it.personal_details.gender,
                             dob = it.personal_details.dob,
-                            aadhar = it.personal_details.aadhaar_number,
+                            aadhar = it.personal_details.aadhaar_number.replace(" ",""),
                             mobile = it.personal_details.mobile_number,
                             pan = it.personal_details.pan_number,
                             email = it.personal_details.email,
@@ -347,16 +392,16 @@ class SharedViewModel @Inject constructor(
                             it.address.permenant_address.colony_area,
                             it.address.permenant_address.landmark,
                             it.address.permenant_address.pincode,
-                            state = "36",
+                            state = it.address.permenant_address.state,
                             district = it.address.present_address.district,
                             it.address.present_address.house_no,
                             it.address.present_address.street_name,
                             it.address.present_address.colony_area,
                             it.address.present_address.landmark,
                             it.address.present_address.pincode,
-                            temp_state = "36",
+                            temp_state = it.address.present_address.state,
                             it.address.present_address.district,
-                            "0"
+                            is_address_same = "0"
                         )
                         saveBankDetails(
                             self_account_no = it.bank_details.account_no,
@@ -457,13 +502,18 @@ class SharedViewModel @Inject constructor(
             office_address = companyModel?.office_address,
 
             other_qualification = "Other Qualification",
+
             primary_company = companyModel?.primary_company,//int
+            comapany_name = companyModel?.comapany_name,
             service = personalDetailsModel?.serviceType,//int
             worker_type = personalDetailsModel?.typeOfWork ?: "Non Driver" //driver
         )
 
     }
 
+    fun navigate(navigator: Navigator) {
+        _isNavigateLiveData.postValue(navigator)
+    }
 
 
 }

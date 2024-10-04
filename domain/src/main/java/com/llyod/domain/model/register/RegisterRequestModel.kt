@@ -27,6 +27,7 @@ data class RegisterRequestModel(
     val nominee_relation: String?,
     val office_address: String?,
     val other_qualification: String?,
+    val comapany_name: String?,
     val pan_number: String?,
     val pincode: String?,
     val primary_company: String?,

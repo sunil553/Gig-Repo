@@ -11,6 +11,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
+            <include android:id="@+id/progress_layout"
+                layout="@layout/layout_progress_indicator">
+            </include>
+
             <ProgressBar
                 style="?android:attr/progressBarStyleHorizontal"
                 android:layout_width="match_parent"
@@ -18,6 +22,7 @@
                 android:id="@+id/progress"
                 android:padding="20dp"
                 android:scaleY="5"
+                android:visibility="invisible"
                 app:layout_constraintTop_toBottomOf="@+id/layoutToolBar"
                 android:max="100"
                 android:progress="40"/>
@@ -64,6 +69,14 @@
                 android:layout_marginBottom="8dp"/>
 
             <Spinner
+                android:id="@+id/spinnerState"
+                android:layout_width="match_parent"
+                android:spinnerMode="dialog"
+                android:layout_marginBottom="8dp"
+                style="@style/Widget.AppCompat.Spinner.Underlined"
+                android:layout_height="wrap_content" />
+
+            <Spinner
                 android:id="@+id/spinnerDistrict"
                 android:layout_width="match_parent"
                 android:spinnerMode="dialog"
@@ -77,6 +90,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/pin_code"
+                android:maxLength="6"
+                android:digits="0123456789"
                 android:inputType="number"
                 android:layout_marginBottom="16dp"/>
 
@@ -128,7 +143,13 @@
                 android:hint="@string/land_mark"
                 android:inputType="text"
                 android:layout_marginBottom="8dp"/>
-
+            <Spinner
+                android:id="@+id/spinnerTempState"
+                android:layout_width="match_parent"
+                android:spinnerMode="dialog"
+                android:layout_marginBottom="8dp"
+                style="@style/Widget.AppCompat.Spinner.Underlined"
+                android:layout_height="wrap_content" />
             <Spinner
                 android:id="@+id/spinnerTempDistrict"
                 android:layout_width="match_parent"
@@ -142,6 +163,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/pin_code"
+                android:maxLength="6"
+                android:digits="0123456789"
                 android:inputType="number"/>
 
             <LinearLayout

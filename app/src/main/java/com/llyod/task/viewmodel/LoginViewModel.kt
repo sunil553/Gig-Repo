@@ -6,14 +6,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.llyod.data.repository.UserPreferencesRepo
-import com.llyod.data.repository.UserPreferencesRepository
 import com.llyod.domain.common.Result
 import com.llyod.domain.repository.LoginOtpValidationRepository
-import com.llyod.task.SharedPreferencesManager
-import com.llyod.task.activity.LoginActivity
-import com.llyod.task.activity.LoginActivity.Companion
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -33,6 +28,9 @@ class LoginViewModel @Inject constructor(
     //
     private val _loginLiveData = MutableLiveData<Boolean>()
     val loginLiveData: LiveData<Boolean> = _loginLiveData
+    //
+    private val _showMessageLiveData = MutableLiveData<String>()
+    val showMessageLiveData: LiveData<String> = _showMessageLiveData
 
     private val _errorMessages = MutableLiveData<String>()
     val errorMessages: LiveData<String> = _errorMessages
@@ -58,7 +56,7 @@ class LoginViewModel @Inject constructor(
                     otp = otpNumber.get()!!, login = TRUE)){
                     is Result.Error -> {
                         progressBarVisibility.set(false)
-                        _errorMessages.postValue("Invalid OTP")
+                        _errorMessages.postValue("Please enter valid OTP")
                     }
                     is Result.Success -> {
                         val apiresponse  =  response.data
@@ -79,6 +77,7 @@ class LoginViewModel @Inject constructor(
                             }
 
                         }
+                        _showMessageLiveData.postValue("User Validated Successfully")
                         progressBarVisibility.set(false)
                         loginButtonVisibility.set(false)
                         otpFieldVisibility.set(true)
@@ -86,6 +85,8 @@ class LoginViewModel @Inject constructor(
                     }
                 }
             }
+        } else {
+            _errorMessages.postValue("Please enter valid OTP")
         }
 
     }
@@ -102,19 +103,18 @@ class LoginViewModel @Inject constructor(
                 when(val response = loginOtpValidationRepository.generateOtp(mobileNumber.toString())){
                     is Result.Error -> {
                         progressBarVisibility.set(false)
-
                     }
-
                     is Result.Success -> {
+                        _showMessageLiveData.postValue("OTP Send Successfully")
                         progressBarVisibility.set(false)
                         loginButtonVisibility.set(false)
                         otpFieldVisibility.set(true)
-
-
                     }
                 }
 
             }
+        } else {
+            _errorMessages.postValue("Enter Valid Phone Number")
         }
 
     }

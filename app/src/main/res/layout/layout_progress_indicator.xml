@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        >
+        <LinearLayout
+            android:gravity="center"
+            android:orientation="horizontal"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        <View
+            android:id="@+id/bar1"
+            android:layout_width="30dp"
+            android:layout_height="4dp"
+            android:layout_marginBottom="10dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/linearlayout1"
+            android:background="@drawable/gradient_progress_bar" />
+        <LinearLayout
+            android:id="@+id/linearlayout1"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:layout_width="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/bar1"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_height="wrap_content">
+            <FrameLayout
+                android:id="@+id/framelayout1"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:background="@drawable/circle_purple" >
+
+                <ImageView
+                    android:id="@+id/circle1"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/person_ic"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/bar1"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </FrameLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/personal"
+                android:gravity="center"
+                android:textColor="@color/purple_indicator"
+                android:textSize="@dimen/_11sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/framelayout1">
+
+            </TextView>
+        </LinearLayout>
+
+
+        <View
+            android:id="@+id/bar2"
+            android:layout_width="30dp"
+            android:layout_height="4dp"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/disabled_progress_bar"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/linearlayout1"
+            app:layout_constraintEnd_toStartOf="@+id/linearlayout2"
+            app:layout_constraintTop_toTopOf="parent" />
+        <LinearLayout
+            android:id="@+id/linearlayout2"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:layout_width="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/bar2"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_height="wrap_content">
+            <FrameLayout
+                android:id="@+id/framelayout2"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:background="@drawable/circle_grey"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/bar2"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <ImageView
+                    android:id="@+id/circle2"
+                    android:layout_width="25dp"
+                    android:layout_height="33dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/location_ic"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/bar2"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </FrameLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/address"
+                android:gravity="center"
+                android:textSize="@dimen/_11sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/framelayout2">
+            </TextView>
+        </LinearLayout>
+
+
+
+        <View
+            android:id="@+id/bar3"
+            android:layout_width="30dp"
+            android:layout_height="4dp"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/disabled_progress_bar"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/linearlayout2"
+            app:layout_constraintTop_toTopOf="parent" />
+        <LinearLayout
+            android:id="@+id/linearlayout3"
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:gravity="center_horizontal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/bar3"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_height="wrap_content">
+            <FrameLayout
+                android:id="@+id/framelayout3"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:background="@drawable/circle_grey"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/bar3"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <ImageView
+                    android:id="@+id/circle3"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/bank_ic"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/bar3"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </FrameLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/bank"
+                android:textSize="@dimen/_11sp"
+                android:gravity="center"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/framelayout3">
+            </TextView>
+        </LinearLayout>
+
+        <View
+            android:id="@+id/bar4"
+            android:layout_width="30dp"
+            android:layout_height="4dp"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/disabled_progress_bar"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/linearlayout3"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <LinearLayout
+            android:id="@+id/linearlayout4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/bar4"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <FrameLayout
+                android:id="@+id/framelayout4"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:background="@drawable/circle_grey"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/bar4"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <ImageView
+                    android:id="@+id/circle4"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/company_ic"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/bar4"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </FrameLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/company"
+                android:textSize="@dimen/_11sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/framelayout4" />
+        </LinearLayout>
+
+        <View
+            android:id="@+id/bar5"
+            android:layout_width="30dp"
+            android:layout_height="4dp"
+            android:layout_marginStart="-4dp"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/disabled_progress_bar"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/linearlayout4"
+            app:layout_constraintStart_toStartOf="@+id/linearlayout4"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

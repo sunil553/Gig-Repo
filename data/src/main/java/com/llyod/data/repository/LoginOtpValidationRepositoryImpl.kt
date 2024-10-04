@@ -61,19 +61,15 @@ class LoginOtpValidationRepositoryImpl @Inject constructor(private val loginData
     }
 
     override suspend fun getDistricts(stateId: String): Result<DistrictsForStatesResponse?> {
-        return if (districtResponse !=null) {
-            Result.Success(districtResponse)
-        } else {
             when(val response  = loginDataSource.getDistricts(stateId)){
                 is Result.Error -> {
-                    Result.Error(Exception())
+                    return Result.Error(Exception())
                 }
                 is Result.Success -> {
                     districtResponse = response.data
-                    Result.Success(districtResponse)
+                    return Result.Success(districtResponse)
                 }
             }
-        }
     }
 
     override suspend fun getServiceTypes(): Result<ServiceResponse?> {

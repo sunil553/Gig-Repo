@@ -1,5 +1,6 @@
 package com.llyod.task.common
 
+import android.R.attr.src
 import android.annotation.SuppressLint
 import android.content.Context
 import android.database.Cursor
@@ -11,12 +12,19 @@ import android.provider.MediaStore
 import android.util.Base64
 import android.util.Base64OutputStream
 import android.util.Log
+import android.widget.Toast
+import java.io.BufferedInputStream
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileDescriptor
 import java.io.FileNotFoundException
 import java.io.FileOutputStream
 import java.io.IOException
+import java.io.InputStream
+import java.net.HttpURLConnection
+import java.net.MalformedURLException
+import java.net.URL
+
 
 object Utils {
 
@@ -55,7 +63,7 @@ object Utils {
 
         //Convert bitmap to byte array
         val bos = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 0 /*ignored for PNG*/, bos)
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 80 /*ignored for PNG*/, bos)
         val bitMapData = bos.toByteArray()
 
         //write the bytes in file
@@ -123,5 +131,28 @@ object Utils {
             }
             return@use outputStream.toString()
         }
+    }
+    fun loadBitmap(url: String?): Bitmap? {
+        val url: URL = mStringToURL(url!!)!!
+        val connection: HttpURLConnection?
+        try {
+            connection = url.openConnection() as HttpURLConnection
+            connection.connect()
+            val inputStream: InputStream = connection.inputStream
+            val bufferedInputStream = BufferedInputStream(inputStream)
+            return BitmapFactory.decodeStream(bufferedInputStream)
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+        return null
+    }
+    // Function to convert string to URL
+    private fun mStringToURL(string: String): URL? {
+        try {
+            return URL(string)
+        } catch (e: MalformedURLException) {
+            e.printStackTrace()
+        }
+        return null
     }
 }
