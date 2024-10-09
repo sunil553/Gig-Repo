@@ -11,6 +11,7 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.llyod.task.databinding.FragmentMobileNumberBinding
@@ -27,6 +28,7 @@ class LoginActivity : AppCompatActivity() {
 
 
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         _binding = FragmentMobileNumberBinding.inflate(layoutInflater)
@@ -89,8 +91,13 @@ class LoginActivity : AppCompatActivity() {
 
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun showOtpSendMessage(message: String?) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+        _binding?.editTextValidateNumber?.isFocusableInTouchMode =  true
+        _binding?.editTextValidateNumber?.requestFocus()
+        _binding?.editTextValidateNumber?.requestFocusFromTouch()
+        _binding?.editTextValidateNumber?.isPressed = true
     }
 
     private fun onErrorMessage(errorMessage: String?) {
@@ -106,6 +113,7 @@ class LoginActivity : AppCompatActivity() {
         }
 
     }
+
 
     companion object {
         private const val REFRESH_TOKEN = "REFRESH_TOKEN"

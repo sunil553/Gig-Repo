@@ -5,113 +5,171 @@
         android:layout_width="match_parent"
         android:layout_gravity="center"
         android:gravity="center"
-        android:layout_height="match_parent"
-        android:padding="16dp">
-
-
-        <LinearLayout
+        android:background="@drawable/gradient_bg"
+        android:layout_height="match_parent" >
+        <FrameLayout
+            android:padding="16dp"
             android:layout_width="match_parent"
-            android:orientation="vertical"
-            android:layout_height="match_parent"
-            tools:ignore="UselessParent">
-
-            <ImageView
-                android:id="@+id/logo"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:layout_gravity="center"
-                android:layout_marginBottom="24dp"
-                android:src="@drawable/tg_logo" />
-            <!-- Title TextView -->
-            <TextView
-                android:id="@+id/textViewTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/login_with_mobile_number"
-                android:textSize="24sp"
-                android:textStyle="bold"
-                android:layout_marginBottom="24dp"/>
-
-            <!-- Phone Number EditText -->
-            <EditText
-                android:id="@+id/editTextPhoneNumber"
+            android:layout_height="match_parent">
+            <LinearLayout
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:orientation="vertical"
+                android:layout_marginTop="50dp"
+                android:layout_gravity="center_horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/enter_your_mobile_number"
-                android:inputType="phone"
-                android:maxLength="10"
-                android:digits="0123456789"
-                android:autofillHints="phone"
-                android:visibility="@{viewModel.otpFieldVisibility ? View.GONE : View.VISIBLE}"
-                android:maxLines="1"
-                android:text="@={viewModel.phoneNumber}"
-                android:importantForAccessibility="yes"
-                android:contentDescription="@string/phone_number_input"
-                android:layout_marginBottom="16dp"
-                tools:ignore="ContentDescription" />
+                android:layout_height="wrap_content">
+                <ImageView
+                    android:id="@+id/logo"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_gravity="top|center|center_horizontal"
+                    android:layout_marginBottom="24dp"
+                    android:src="@drawable/tg_logo" />
 
-            <EditText
-                android:id="@+id/editTextValidateNumber"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/enter_otp"
-                android:text="@={viewModel.otpNumber}"
-                android:inputType="phone"
-                android:visibility="@{viewModel.otpFieldVisibility ? View.VISIBLE : View.GONE}"
-                android:maxLines="1"
-                android:digits="0123456789"
-                android:onClick="@{() -> viewModel.getOtpForMobileNo()}"
-                android:maxLength="6"
-                android:importantForAccessibility="yes"
-                android:contentDescription="@string/phone_number_input"
-                android:layout_marginBottom="16dp"
-                tools:ignore="ContentDescription" />
+                <TextView
+                    android:text="GIG-TG"
+                    android:textColor="@color/white"
+                    android:layout_gravity="center_horizontal|center"
+                    android:gravity="center"
+                    android:textStyle="bold"
+                    android:textSize="35sp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                </TextView>
+                <TextView
+                    android:text="FOR THE GIG WORKERS"
+                    android:textColor="@color/white"
+                    android:layout_marginTop="10dp"
+                    android:layout_gravity="center_horizontal|center"
+                    android:gravity="center"
+                    android:textSize="25sp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                </TextView>
 
-            <!-- Login Button -->
-            <Button
-                android:id="@+id/buttonVerify"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:visibility="@{viewModel.loginButtonVisibility ? View.GONE : View.VISIBLE}"
-                android:onClick="@{() -> viewModel.getOtpForMobileNo()}"
-                android:text="@string/verify" />
+            </LinearLayout>
 
-            <!-- Login Button -->
-            <Button
-                android:id="@+id/buttonLogin"
+            <androidx.cardview.widget.CardView
+                app:cardCornerRadius="10dp"
+                app:cardElevation="10dp"
+                android:layout_gravity="bottom"
+                android:layout_marginBottom="100dp"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:visibility="@{viewModel.loginButtonVisibility ? View.VISIBLE : View.GONE}"
-                android:onClick="@{() -> viewModel.login()}"
-                android:text="@string/login" />
+                android:layout_height="280dp">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:orientation="vertical"
+                    android:padding="20dp"
+                    android:layout_height="wrap_content"
+                    tools:ignore="UselessParent">
 
-        </LinearLayout>
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="wrap_content"
-            android:gravity="center_vertical"
-            android:layout_centerInParent="true"
-            android:layout_height="wrap_content">
-           <!-- <ProgressBar
-                android:id="@+id/progressBar"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:indeterminate="false"
-                android:visibility="@{viewModel.progressBarVisibility ? View.VISIBLE : View.GONE}"
-                android:progressDrawable="@drawable/custom_progress_bar"
-                android:background="@drawable/circle_shape"
-                style="?android:attr/progressBarStyleHorizontal"
-                android:max="100"
-                android:progress="65" />-->
-            <com.airbnb.lottie.LottieAnimationView
-                android:id="@+id/progressBar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:lottie_rawRes="@raw/loading"
-                android:visibility="@{viewModel.progressBarVisibility ? View.VISIBLE : View.GONE}"
-                app:lottie_autoPlay="true"
-                app:lottie_loop="true"/>
-        </LinearLayout>
+                    <!-- Title TextView -->
+                    <TextView
+                        android:id="@+id/textViewTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/login_with_mobile_number"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="24dp"/>
+
+                    <!-- Phone Number EditText -->
+                    <EditText
+                        android:id="@+id/editTextPhoneNumber"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/enter_your_mobile_number"
+                        android:inputType="phone"
+                        android:imeOptions="actionGo"
+                        android:padding="15dp"
+                        android:maxLength="10"
+                        android:digits="0123456789"
+                        android:background="@drawable/rounded_edit_text"
+                        android:autofillHints="phone"
+                        android:visibility="@{viewModel.otpFieldVisibility ? View.GONE : View.VISIBLE}"
+                        android:maxLines="1"
+                        android:text="@={viewModel.phoneNumber}"
+                        android:importantForAccessibility="yes"
+                        android:contentDescription="@string/phone_number_input"
+                        android:layout_marginBottom="16dp"
+                        tools:ignore="ContentDescription" />
+
+                    <EditText
+                        android:id="@+id/editTextValidateNumber"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/enter_otp"
+                        android:focusable="true"
+                        android:imeOptions="actionGo"
+                        android:background="@drawable/rounded_edit_text"
+                        android:text="@={viewModel.otpNumber}"
+                        android:inputType="phone"
+                        android:padding="15dp"
+                        android:visibility="@{viewModel.otpFieldVisibility ? View.VISIBLE : View.GONE}"
+                        android:maxLines="1"
+                        android:digits="0123456789"
+                        android:maxLength="6"
+                        android:importantForAccessibility="yes"
+                        android:contentDescription="@string/phone_number_input"
+                        android:layout_marginBottom="16dp"
+                        tools:ignore="ContentDescription" />
+
+                    <!-- Login Button -->
+                    <Button
+                        android:id="@+id/buttonVerify"
+                        android:layout_width="match_parent"
+                        android:backgroundTint="@color/home_screen_background_color"
+                        android:background="@color/home_screen_background_color"
+                        android:layout_height="wrap_content"
+                        android:visibility="@{viewModel.loginButtonVisibility ? View.GONE : View.VISIBLE}"
+                        android:onClick="@{() -> viewModel.getOtpForMobileNo()}"
+                        android:text="@string/verify" />
+
+                    <!-- Login Button -->
+                    <Button
+                        android:id="@+id/buttonLogin"
+                        android:backgroundTint="@color/home_screen_background_color"
+                        android:background="@color/home_screen_background_color"
+                        android:layout_width="match_parent"
+                        android:layout_marginTop="20dp"
+                        android:layout_height="wrap_content"
+                        android:visibility="@{viewModel.loginButtonVisibility ? View.VISIBLE : View.GONE}"
+                        android:onClick="@{() -> viewModel.login()}"
+                        android:text="@string/login" />
+
+                </LinearLayout>
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="wrap_content"
+                    android:gravity="center_vertical|center"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_height="wrap_content">
+                    <!-- <ProgressBar
+                         android:id="@+id/progressBar"
+                         android:layout_width="100dp"
+                         android:layout_height="100dp"
+                         android:indeterminate="false"
+                         android:visibility="@{viewModel.progressBarVisibility ? View.VISIBLE : View.GONE}"
+                         android:progressDrawable="@drawable/custom_progress_bar"
+                         android:background="@drawable/circle_shape"
+                         style="?android:attr/progressBarStyleHorizontal"
+                         android:max="100"
+                         android:progress="65" />-->
+                    <com.airbnb.lottie.LottieAnimationView
+                        android:id="@+id/progressBar"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:lottie_rawRes="@raw/loading"
+                        android:visibility="@{viewModel.progressBarVisibility ? View.VISIBLE : View.GONE}"
+                        app:lottie_autoPlay="true"
+                        app:lottie_loop="true"/>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+
+        </FrameLayout>
 
     </RelativeLayout>
 

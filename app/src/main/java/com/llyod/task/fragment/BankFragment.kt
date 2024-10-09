@@ -63,6 +63,8 @@ class BankFragment : Fragment() {
         _binding?.prev?.setOnClickListener {
             findNavController().navigateUp()
         }
+        sharedViewModel.errorMessages.observe(viewLifecycleOwner,::onErrorMessage)
+
         sharedViewModel.isRegisteredLiveData.observe(viewLifecycleOwner,::isRegisteredLiveData)
 
 
@@ -111,6 +113,11 @@ class BankFragment : Fragment() {
 
             null -> {
             }
+        }
+    }
+    private fun onErrorMessage(errorMessage: String?) {
+        errorMessage?.let {
+            Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_SHORT).show()
         }
     }
     private fun isRegisteredLiveData(isRegisteredUser: Boolean?) {

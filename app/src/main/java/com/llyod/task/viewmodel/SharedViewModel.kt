@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.llyod.data.common.NetworkStatus
 import com.llyod.data.repository.UserPreferencesRepo
 import com.llyod.domain.common.Result
 import com.llyod.domain.model.form.CompanyReponse
@@ -28,11 +29,15 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SharedViewModel @Inject constructor(
+    private val networkStatus: NetworkStatus,
     private val userRepository: UserPreferencesRepo,
     private val configRepository: LoginOtpValidationRepository,
     private val userPreferencesRepo: UserPreferencesRepo
 ) : ViewModel() {
 
+
+    private val _errorMessages = MutableLiveData<String>()
+    val errorMessages: LiveData<String> = _errorMessages
 
     private  var serviceResponse: ServiceResponse? = null
     var companyModel: CompanyDetailsModel? = null
@@ -126,7 +131,9 @@ class SharedViewModel @Inject constructor(
         noOfHours : String?,
         fatherName : String?,
         serviceType : String?,
-    ){
+         otherQualification : String? ,
+
+        ){
         personalDetailsModel = PersonalDetailsModel(
             photo,
             name,
@@ -143,7 +150,8 @@ class SharedViewModel @Inject constructor(
             noOfHours,
             fatherName,
             serviceType,
-            profile_photo
+            profile_photo,
+            otherQualification
         )
     }
 
@@ -223,18 +231,19 @@ class SharedViewModel @Inject constructor(
     }
 
     fun getStates() {
-        viewModelScope.launch {
-            when(val response = configRepository.getStates()){
-                is Result.Error -> {
+            viewModelScope.launch {
+                when (val response = configRepository.getStates()) {
+                    is Result.Error -> {
 
-                }
-                is Result.Success -> {
-                    response.data?.let {
-                        _statesMutableLiveData.postValue(response.data)
+                    }
+
+                    is Result.Success -> {
+                        response.data?.let {
+                            _statesMutableLiveData.postValue(response.data)
+                        }
                     }
                 }
             }
-        }
     }
     fun getDistrictsByStateId(stateId : String) {
         viewModelScope.launch {
@@ -356,6 +365,10 @@ class SharedViewModel @Inject constructor(
         }
     }
     fun getRegisterUser(requireContext: Context) {
+        if (!networkStatus.isOnline()){
+            _errorMessages.postValue("Please check your internet connection")
+            return
+        }
         viewModelScope.launch {
             _loading.postValue(true)
             when(val responseFromServer = configRepository.getRegisteredUser()){
@@ -381,10 +394,11 @@ class SharedViewModel @Inject constructor(
                             qualification = it.personal_details.qualification,
                             typeOfWork = it.personal_details.worker_type,
                             workingType = it.personal_details.working_type,
-                            vehicleType = "1",
+                            vehicleType = it.personal_details.vehicle,
                             noOfHours = it.personal_details.working_hours,
                             fatherName = it.personal_details.father_name,
-                            serviceType = "0"
+                            serviceType = it.personal_details.service,
+                            otherQualification = it.personal_details.other_qualification
                         )
                         saveAddressDetails(
                            it.address.permenant_address.house_no,
@@ -393,7 +407,7 @@ class SharedViewModel @Inject constructor(
                             it.address.permenant_address.landmark,
                             it.address.permenant_address.pincode,
                             state = it.address.permenant_address.state,
-                            district = it.address.present_address.district,
+                            district = it.address.permenant_address.district,
                             it.address.present_address.house_no,
                             it.address.present_address.street_name,
                             it.address.present_address.colony_area,
@@ -418,7 +432,7 @@ class SharedViewModel @Inject constructor(
                             saveCompanyDetails(
                                 it.company_details[0].date_of_joining,
                                 it.company_details[0].comapany_name,
-                                it.company_details[0].is_primary,
+                                it.company_details[0].working_id,
                                 it.company_details[0].local_office_address
                             )
                         }
@@ -429,6 +443,9 @@ class SharedViewModel @Inject constructor(
         }
     }
     fun registerUser(){
+        if (!networkStatus.isOnline()){
+            _errorMessages.postValue("Please check your internet connection")
+        }
         viewModelScope.launch {
             _loading.postValue(true)
             val response = buildRegisterRequestModel(personalDetailsModel,addressDetailsModel,bankDetailsModel,companyModel)
@@ -465,10 +482,12 @@ class SharedViewModel @Inject constructor(
             pan_number = personalDetailsModel?.pan,
             mobile = personalDetailsModel?.mobile,
             qualification = personalDetailsModel?.qualification,
-            working_type = personalDetailsModel?.typeOfWork ?: "Driver",
+            working_type = personalDetailsModel?.workingType!!,
             vehicle = personalDetailsModel?.vehicleType,
             working_hours = personalDetailsModel?.noOfHours,
             profile_image = personalDetailsModel?.photo,
+            other_qualification = personalDetailsModel?.otherQualification,
+
 
             house_flat_no = addressDetailsModel?.house_no,
             street_name = addressDetailsModel?.street_name,
@@ -501,12 +520,11 @@ class SharedViewModel @Inject constructor(
             doj = companyModel?.doj,
             office_address = companyModel?.office_address,
 
-            other_qualification = "Other Qualification",
 
             primary_company = companyModel?.primary_company,//int
             comapany_name = companyModel?.comapany_name,
-            service = personalDetailsModel?.serviceType,//int
-            worker_type = personalDetailsModel?.typeOfWork ?: "Non Driver" //driver
+            service = personalDetailsModel?.service,//int
+            worker_type = personalDetailsModel?.typeOfWork //driver
         )
 
     }

@@ -4,10 +4,10 @@ import java.io.File
 
 data class PersonalDetailsModel(
     val photo : File?,
-   val name : String?,
-   val gender : String?,
-   val dob : String?,
-   val aadhar : String?,
+    val name : String?,
+    val gender : String?,
+    val dob : String?,
+    val aadhar : String?,
     val  pan : String?,
     val mobile : String?,
     val email : String?,
@@ -17,8 +17,9 @@ data class PersonalDetailsModel(
     val vehicleType : String?,
     val noOfHours : String?,
     val fatherName : String?,
-    val serviceType : String?,
+    val service : String?,
     val profile_photo : String?,
+    val otherQualification : String? ,
 
     )
 

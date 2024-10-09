@@ -7,11 +7,11 @@
     <string name="login">Login</string>
     <string name="enter_otp">Enter OTP</string>
     <string name="verify">Verify</string>
-    <string name="primary_aggregator_platform_company_name">Primary Aggregator/Platform/Company (Name) *</string>
+    <string name="primary_aggregator_platform_company_name">Primary Aggregator/Platform/Company (Name)</string>
     <string name="company_name_dropdown">Company Name Dropdown</string>
-    <string name="aggregator_platform_company_worker_id">Aggregator/Platform/Company Worker ID *</string>
+    <string name="aggregator_platform_company_worker_id">Aggregator/Platform/Company Worker ID</string>
     <string name="worker_id">Worker ID</string>
-    <string name="date_of_joining">Date Of Joining *</string>
+    <string name="date_of_joining">Date Of Joining</string>
     <string name="enter_date_yyyy_mm_dd">Enter Date (YYYY-MM-DD)</string>
     <string name="local_office_address_if_available">Local Office Address (if available)</string>
     <string name="local_office_address">Local Office Address</string>

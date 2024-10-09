@@ -100,6 +100,9 @@ class DashboardFragment : Fragment() {
             } else if (registeredUserResponse?.aggregator_status.equals("Approved", ignoreCase = true)){
                 binding.statusAggregator.text = "(Approved)"
                 binding.aggregatorCircle.background = ResourcesCompat.getDrawable(resources, R.drawable.circle_fill, null)
+            }else if (registeredUserResponse?.aggregator_status.equals("rejected", ignoreCase = true)){
+                binding.statusAggregator.text = "(Rejected)"
+                binding.aggregatorCircle.background = ResourcesCompat.getDrawable(resources, R.drawable.red_circle_fill, null)
             } else {
                 binding.linearlayout.visibility = View.GONE
                 binding.linearlayout3.visibility = View.VISIBLE
@@ -111,6 +114,9 @@ class DashboardFragment : Fragment() {
             } else  if (registeredUserResponse?.admin_status.equals("Approved", ignoreCase = true)){
                 binding.adminAggregator.text = "(Approved)"
                 binding.adminCircle.background = ResourcesCompat.getDrawable(resources, R.drawable.circle_fill, null)
+            }else  if (registeredUserResponse?.admin_status.equals("rejected", ignoreCase = true)){
+                binding.adminAggregator.text = "(rejected)"
+                binding.adminCircle.background = ResourcesCompat.getDrawable(resources, R.drawable.red_circle_fill, null)
             }
 
         }else {

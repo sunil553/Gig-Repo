@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.llyod.data.common.NetworkStatus
 import com.llyod.data.repository.UserPreferencesRepo
 import com.llyod.domain.common.Result
 import com.llyod.domain.repository.LoginOtpValidationRepository
@@ -14,6 +15,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
+    private val networkStatus: NetworkStatus,
     private val loginOtpValidationRepository: LoginOtpValidationRepository,
     private val userPreferencesRepository: UserPreferencesRepo
 ) : ViewModel() {
@@ -40,7 +42,7 @@ class LoginViewModel @Inject constructor(
         loginButtonVisibility.set(true)
     }
     private fun validateMobileNo(mobileNo: String): Boolean {
-        return mobileNo.length == 10
+        return mobileNo.length == 10 && isValidMobileNumber(mobileNo)
     }
     fun getAccessToken(): Boolean {
         return userPreferencesRepository.getString(MOBILE_NO,"").isNotEmpty()
@@ -48,6 +50,10 @@ class LoginViewModel @Inject constructor(
 
 
     fun getOtpForMobileNo(){
+        if (!networkStatus.isOnline()){
+            _errorMessages.postValue("Please check your internet connection")
+            return
+        }
         if (otpNumber.get()?.let { validateOtp(otp = it) } == true) {
             val mobileNumber = phoneNumber.get()
             viewModelScope.launch {
@@ -56,7 +62,7 @@ class LoginViewModel @Inject constructor(
                     otp = otpNumber.get()!!, login = TRUE)){
                     is Result.Error -> {
                         progressBarVisibility.set(false)
-                        _errorMessages.postValue("Please enter valid OTP")
+//                        _errorMessages.postValue("Please enter valid OTP")
                     }
                     is Result.Success -> {
                         val apiresponse  =  response.data
@@ -91,11 +97,23 @@ class LoginViewModel @Inject constructor(
 
     }
 
-    fun validateOtp(otp: String): Boolean {
+
+
+    private fun validateOtp(otp: String): Boolean {
         return otp.length == 6
     }
 
+    private fun isValidMobileNumber(mobileNumber: String): Boolean {
+        val regex = Regex("^[6-9]\\d{9}$")
+        return regex.matches(mobileNumber)
+    }
+
+
     fun login(){
+        if (!networkStatus.isOnline()){
+            _errorMessages.postValue("Please check your internet connection")
+            return
+        }
         val mobileNumber = phoneNumber.get()
         if (mobileNumber?.let { validateMobileNo(it).not() } != true) {
             viewModelScope.launch {

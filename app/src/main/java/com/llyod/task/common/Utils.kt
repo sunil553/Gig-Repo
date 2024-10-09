@@ -1,6 +1,5 @@
 package com.llyod.task.common
 
-import android.R.attr.src
 import android.annotation.SuppressLint
 import android.content.Context
 import android.database.Cursor
@@ -12,7 +11,6 @@ import android.provider.MediaStore
 import android.util.Base64
 import android.util.Base64OutputStream
 import android.util.Log
-import android.widget.Toast
 import java.io.BufferedInputStream
 import java.io.ByteArrayOutputStream
 import java.io.File

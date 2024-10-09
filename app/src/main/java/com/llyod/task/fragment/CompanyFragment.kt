@@ -72,6 +72,7 @@ class CompanyFragment : Fragment() {
             saveCompanyDetails()
             findNavController().navigateUp()
         }
+        sharedViewModel.errorMessages.observe(viewLifecycleOwner,::onErrorMessage)
 
         sharedViewModel.getCompanyTypes()
         sharedViewModel.companyLiveData.observe(viewLifecycleOwner,::getCompanyDetails)
@@ -232,7 +233,11 @@ class CompanyFragment : Fragment() {
     private fun showLoader(b: Boolean?) {
         if (b == true) _binding?.loading?.visibility = View.VISIBLE else _binding?.loading?.visibility = View.GONE
     }
-
+    private fun onErrorMessage(errorMessage: String?) {
+        errorMessage?.let {
+            Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_SHORT).show()
+        }
+    }
     private fun getCompanyDetails(response: CompanyReponse?) {
         val details = response?.details?.map { it.name }
 
@@ -267,12 +272,23 @@ class CompanyFragment : Fragment() {
             override fun onNothingSelected(parent: AdapterView<*>?) {
                 // Do something when nothing is selected
             }}
-        sharedViewModel.companyModel?.let {
-            it.comapany_name?.let { it1 ->
-                selectSpinnerItemByValueByList(binding.spinnerCompanyName,
-                    it1,response.details
-                )
+        sharedViewModel.companyModel?.let { company ->
+            val companyDetail = response.details.filter { it.name == company.comapany_name }
+            if (companyDetail.isNotEmpty()) {
+                company.comapany_name?.let { it1 ->
+                    selectSpinnerItemByValueByList(binding.spinnerCompanyName,
+                        it1,companyDetail
+                    )
+                }
+            } else {
+                val companyDetail1 = response.details.filter { it.id.toString() == company.comapany_name }
+                    company.comapany_name?.let { it1 ->
+                        selectSpinnerItemByValueByList(binding.spinnerCompanyName,
+                            it1,companyDetail1
+                        )
+                    }
             }
+
         }
 
     }
@@ -280,7 +296,6 @@ class CompanyFragment : Fragment() {
     private fun selectSpinnerItemByValueByList(spnr: Spinner, value: String?, details: List<Detail>) {
         try {
             val adapter = spnr.adapter
-            val details =  details.filter { it.id.toString() == value }
             for (position in 0 until adapter.count) {
                 if (adapter.getItem(position) == details.firstOrNull()?.name) {
                     spnr.setSelection(position)

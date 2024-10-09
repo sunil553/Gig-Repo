@@ -14,4 +14,5 @@
     <color name="purple_indicator">#673AB7</color>
     <color name="disable_indicator">#808080</color>
     <color name="card_disable_indicator">#F8F3F3FF</color>
+    <color name="home_screen_background_color">#49316b</color>
 </resources>

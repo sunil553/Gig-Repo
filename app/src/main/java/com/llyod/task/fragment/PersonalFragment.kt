@@ -38,11 +38,11 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
-import com.google.android.material.snackbar.Snackbar
 import com.llyod.domain.model.form.Detail
 import com.llyod.domain.model.form.QualificationResponse
 import com.llyod.domain.model.form.ServiceResponse
 import com.llyod.task.R
+import com.llyod.task.R.*
 import com.llyod.task.common.Utils
 import com.llyod.task.common.Utils.convertBitmapToFile
 import com.llyod.task.common.Utils.loadBitmap
@@ -52,7 +52,6 @@ import com.llyod.task.viewmodel.SharedViewModel
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Calendar
-import java.util.Date
 import java.util.Locale
 import java.util.concurrent.Executors
 
@@ -60,7 +59,7 @@ import java.util.concurrent.Executors
 class PersonalFragment : Fragment() {
 
 
-    private var qualificationType: Int = 0
+    private var qualificationType: Int? = 0
     private var servieType: Int? = 0
     private lateinit var leftImageFile: File
     private var _binding: FragmentPersonalBinding? = null
@@ -113,6 +112,7 @@ class PersonalFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        sharedViewModel.errorMessages.observe(viewLifecycleOwner,::onErrorMessage)
 
 
         sharedViewModel.personalDetailsModel?.let {
@@ -141,6 +141,14 @@ class PersonalFragment : Fragment() {
             _binding!!.mobileNumberEditText.setText(it.mobile)
             _binding!!.panNumberEditText.setText(it.pan)
             _binding!!.emailEditText.setText(it.email)
+            it.otherQualification?.let { qualification ->
+                if(qualification.isNotEmpty()) {
+                    _binding?.qualificationEditText?.visibility = View.VISIBLE
+                }
+                _binding?.qualificationEditText?.setText(qualification)
+            }
+
+
 
             try {
                 selectSpinnerItem(_binding?.spinnerQualification!!, it.qualification?.toInt() ?: 0)
@@ -151,11 +159,20 @@ class PersonalFragment : Fragment() {
                     )
                 }
             }
-            selectSpinnerItem(_binding?.typeOfService!!, it.serviceType?.toInt() ?: 0)
+            try {
+                selectSpinnerItem(_binding?.typeOfService!!, it.service?.toInt() ?: 0)
+            } catch (e : Exception){
+                it.service?.let { it1 ->
+                    selectSpinnerItemByValue(_binding?.typeOfService!!,
+                        it1
+                    )
+                }
+            }
 //            binding!!.genderRadioGroup.check(it1)
 //            _binding?.workingTypeEditText?.setText(it.typeOfWork)
 //            _binding?.vehicleTypeEditText?.setText(it.vehicleType)
-            _binding?.workingTypeEditText?.setText(it.noOfHours)
+            _binding?.workingTypeEditText?.setText(it.workingType)
+            _binding?.workingDaysEditText?.setText(it.noOfHours)
             _binding?.fatherEditText?.setText(it.fatherName)
         }
 
@@ -223,13 +240,13 @@ class PersonalFragment : Fragment() {
 
         _binding!!.typeOfWorker.setOnCheckedChangeListener { radioGroup, id ->
             when (id) {
-                com.llyod.task.R.id.radioButton1 -> {
+                R.id.radioButton1 -> {
                     _binding!!.vehicleTyperadioGroup.visibility = View.VISIBLE
                     _binding!!.workingTypeTextInputLayout.visibility = View.GONE
                     val radio: RadioButton = radioGroup.findViewById(id)
                     typeOfWorker = radio.text.toString()
                 }
-                com.llyod.task.R.id.radioButton2 -> {
+                R.id.radioButton2 -> {
                     _binding!!.vehicleTyperadioGroup.visibility = View.GONE
                     _binding!!.workingTypeTextInputLayout.visibility = View.VISIBLE
                     val radio: RadioButton = radioGroup.findViewById(id)
@@ -242,16 +259,16 @@ class PersonalFragment : Fragment() {
         }
         _binding!!.vehicleTyperadioGroup.setOnCheckedChangeListener { radioGroup, id ->
             when (id) {
-                com.llyod.task.R.id.vehicelTyperadioButton1 -> {
+                R.id.vehicelTyperadioButton1 -> {
                     val radio: RadioButton = radioGroup.findViewById(id)
                     vehicleType = "1"
                 }
 
-                com.llyod.task.R.id.vehicelTyperadioButton2 -> {
+                R.id.vehicelTyperadioButton2 -> {
                     vehicleType = "2"
 
                 }
-                com.llyod.task.R.id.vehicelTyperadioButton3 -> {
+                R.id.vehicelTyperadioButton3 -> {
                     vehicleType = "3"
 
                 }
@@ -287,7 +304,7 @@ class PersonalFragment : Fragment() {
                             )
 
                         }
-                    } else if (input > 24) {
+                    } else if (input > 23) {
                         _binding!!.workingDaysEditText.setText("23") // Set to maximum value
                         _binding!!.workingDaysEditText.text?.length?.let {
                             _binding!!.workingDaysEditText.setSelection(
@@ -301,15 +318,15 @@ class PersonalFragment : Fragment() {
             }
         })
 
-        _binding?.progressLayout?.bar1?.setBackgroundColor(requireContext().resources.getColor(R.color.purple_indicator))
-        _binding?.progressLayout?.bar2?.setBackgroundColor(requireContext().resources.getColor(R.color.disable_indicator))
-        _binding?.progressLayout?.bar3?.setBackgroundColor(requireContext().resources.getColor(R.color.disable_indicator))
-        _binding?.progressLayout?.bar4?.setBackgroundColor(requireContext().resources.getColor(R.color.disable_indicator))
+        _binding?.progressLayout?.bar1?.setBackgroundColor(requireContext().resources.getColor(color.purple_indicator))
+        _binding?.progressLayout?.bar2?.setBackgroundColor(requireContext().resources.getColor(color.disable_indicator))
+        _binding?.progressLayout?.bar3?.setBackgroundColor(requireContext().resources.getColor(color.disable_indicator))
+        _binding?.progressLayout?.bar4?.setBackgroundColor(requireContext().resources.getColor(color.disable_indicator))
 
-        _binding?.progressLayout?.framelayout1?.background  = ResourcesCompat.getDrawable(resources, R.drawable.circle_purple, null)
-        _binding?.progressLayout?.framelayout2?.background =  ResourcesCompat.getDrawable(resources, R.drawable.circle_grey, null)
-        _binding?.progressLayout?.framelayout3?.background =  ResourcesCompat.getDrawable(resources, R.drawable.circle_grey, null)
-        _binding?.progressLayout?.framelayout4?.background =  ResourcesCompat.getDrawable(resources, R.drawable.circle_grey, null)
+        _binding?.progressLayout?.framelayout1?.background  = ResourcesCompat.getDrawable(resources, drawable.circle_purple, null)
+        _binding?.progressLayout?.framelayout2?.background =  ResourcesCompat.getDrawable(resources, drawable.circle_grey, null)
+        _binding?.progressLayout?.framelayout3?.background =  ResourcesCompat.getDrawable(resources, drawable.circle_grey, null)
+        _binding?.progressLayout?.framelayout4?.background =  ResourcesCompat.getDrawable(resources, drawable.circle_grey, null)
 
         _binding?.progressLayout?.framelayout2?.setOnClickListener {
             sharedViewModel.navigate(SharedViewModel.Navigator.ADDRESS)
@@ -323,7 +340,11 @@ class PersonalFragment : Fragment() {
 
 //        sharedViewModel.isNavigateLiveData.observe(viewLifecycleOwner,::navigate)
     }
-
+    private fun onErrorMessage(errorMessage: String?) {
+        errorMessage?.let {
+            Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_SHORT).show()
+        }
+    }
     private fun navigate(navigator: SharedViewModel.Navigator?) {
         when(navigator){
             SharedViewModel.Navigator.ADDRESS -> {
@@ -346,16 +367,21 @@ class PersonalFragment : Fragment() {
     private fun isRegisteredLiveData(isRegisteredUser: Boolean?) {
         if (isRegisteredUser == true){
             sharedViewModel.personalDetailsModel?.let {
-                _binding?.progressLayout?.bar1?.setBackgroundColor(requireContext().resources.getColor(R.color.purple_indicator))
-                _binding?.progressLayout?.bar2?.setBackgroundColor(requireContext().resources.getColor(R.color.purple_indicator))
-                _binding?.progressLayout?.bar3?.setBackgroundColor(requireContext().resources.getColor(R.color.purple_indicator))
-                _binding?.progressLayout?.bar4?.setBackgroundColor(requireContext().resources.getColor(R.color.purple_indicator))
-                _binding?.progressLayout?.bar5?.setBackgroundColor(requireContext().resources.getColor (R.color.purple_indicator))
+                _binding?.progressLayout?.bar1?.setBackgroundColor(requireContext().resources.getColor(
+                    color.purple_indicator))
+                _binding?.progressLayout?.bar2?.setBackgroundColor(requireContext().resources.getColor(
+                    color.purple_indicator))
+                _binding?.progressLayout?.bar3?.setBackgroundColor(requireContext().resources.getColor(
+                    color.purple_indicator))
+                _binding?.progressLayout?.bar4?.setBackgroundColor(requireContext().resources.getColor(
+                    color.purple_indicator))
+                _binding?.progressLayout?.bar5?.setBackgroundColor(requireContext().resources.getColor (
+                    color.purple_indicator))
 
-                _binding?.progressLayout?.framelayout1?.background  = ResourcesCompat.getDrawable(resources, R.drawable.circle_purple, null)
-                _binding?.progressLayout?.framelayout2?.background =  ResourcesCompat.getDrawable(resources, R.drawable.circle_purple, null)
-                _binding?.progressLayout?.framelayout3?.background =  ResourcesCompat.getDrawable(resources, R.drawable.circle_purple, null)
-                _binding?.progressLayout?.framelayout4?.background =  ResourcesCompat.getDrawable(resources, R.drawable.circle_purple, null)
+                _binding?.progressLayout?.framelayout1?.background  = ResourcesCompat.getDrawable(resources, drawable.circle_purple, null)
+                _binding?.progressLayout?.framelayout2?.background =  ResourcesCompat.getDrawable(resources, drawable.circle_purple, null)
+                _binding?.progressLayout?.framelayout3?.background =  ResourcesCompat.getDrawable(resources, drawable.circle_purple, null)
+                _binding?.progressLayout?.framelayout4?.background =  ResourcesCompat.getDrawable(resources, drawable.circle_purple, null)
 
                 /* it?.photo?.let {
                      _binding?.imageView?.setImageURI(Uri.fromFile(it))
@@ -395,6 +421,7 @@ class PersonalFragment : Fragment() {
                 _binding!!.panNumberEditText.setText(it.pan)
                 _binding!!.emailEditText.setText(it.email)
                 _binding?.workingTypeEditText?.setText(it.typeOfWork)
+                _binding?.qualificationEditText?.setText(it.otherQualification)
 
                 disableView(_binding!!.aadharNumberEditText)
                 disableView(_binding!!.panNumberEditText)
@@ -406,21 +433,25 @@ class PersonalFragment : Fragment() {
                     _binding?.typeOfWorker?.check(R.id.radioButton1);
                 }else {
                     _binding?.typeOfWorker?.check(R.id.radioButton2);
+                    _binding?.workingTypeEditText?.setText(it.workingType)
                 }
 
                 if(it.gender.equals("Male", ignoreCase = true)) {
                     _binding?.genderRadioGroup?.check(R.id.genderradioButton1);
                 }else if (it.gender.equals("Female", ignoreCase = true)){
-                    _binding?.genderRadioGroup?.check(R.id.genderradioButton1);
-                } else {
                     _binding?.genderRadioGroup?.check(R.id.genderradioButton2);
+                } else {
+                    _binding?.genderRadioGroup?.check(R.id.genderradioButton3);
                 }
 
-                if(it.vehicleType.equals("0", ignoreCase = true)) {
+                if(it.vehicleType.equals("Two Wheeler", ignoreCase = true)) {
                     _binding?.vehicleTyperadioGroup?.check(R.id.vehicelTyperadioButton1);
+                }else if(it.vehicleType.equals("Three Wheeler", ignoreCase = true)) {
+                    _binding?.vehicleTyperadioGroup?.check(R.id.vehicelTyperadioButton2);
                 }else {
-                    _binding?.vehicleTyperadioGroup?.check(R.id.vehicelTyperadioButton1);
+                    _binding?.vehicleTyperadioGroup?.check(R.id.vehicelTyperadioButton3);
                 }
+
                 _binding?.workingDaysEditText?.setText(it.noOfHours)
                 _binding?.fatherEditText?.setText(it.fatherName)
                 it.qualification?.let { it1 ->
@@ -428,14 +459,32 @@ class PersonalFragment : Fragment() {
                         it1
                     )
                 }
-                it.serviceType?.let { it1 ->
-                    sharedViewModel.getServiceResponse()?.details?.let { it2 ->
-                        selectSpinnerItemByValueByList(binding.typeOfService,
-                            it1,
-                            it2
+                it.service?.let { service ->
+                    selectSpinnerItemByValue(binding.typeOfService,
+                        service
+                    )
+                    /*sharedViewModel.getServiceResponse()?.details?.let { details ->
 
-                        )
-                    }
+                        val detail =  details.filter { it.id.toString() == service }
+                        Log.e("SERVICE",service)
+                        if (detail.isNotEmpty()) {
+                            selectSpinnerItemByValueByList(binding.typeOfService,
+                                service,
+                                details
+
+                            )
+                        } else {
+                            val detail1 =  details.filter { it.name == service }
+                            if (detail1.isNotEmpty()) {
+                                selectSpinnerItemByValueByList(binding.typeOfService,
+                                    service,
+                                    detail1
+                                )
+                            }
+
+                        }
+
+                    }*/
                 }
             }
         }
@@ -443,9 +492,23 @@ class PersonalFragment : Fragment() {
     private fun selectSpinnerItemByValueByList(spnr: Spinner, value: String?, details: List<Detail>) {
         try {
             val adapter = spnr.adapter
-            val details =  details.filter { it.id == value?.toInt() }
             for (position in 0 until adapter.count) {
-                if (adapter.getItem(position) == details.firstOrNull()?.name) {
+                if (adapter.getItem(position).toString().equals(details.firstOrNull()?.name,ignoreCase = true)) {
+                    spnr.setSelection(position)
+                    return
+                }
+            }
+        }catch (exception : Exception){
+
+        }
+
+    }
+
+    private fun selectSpinnerItemByValueByList2(spnr: Spinner, value: String?, details: List<Detail>) {
+        try {
+            val adapter = spnr.adapter
+            for (position in 0 until adapter.count) {
+                if (adapter.getItem(position).toString().equals(details.firstOrNull()?.name,ignoreCase = true)) {
                     spnr.setSelection(position)
                     return
                 }
@@ -511,6 +574,7 @@ class PersonalFragment : Fragment() {
         val vehicleType = vehicleType
         val  noOfHours = _binding?.workingDaysEditText?.text.toString().trim()
         val fatherName = _binding?.fatherEditText?.text.toString()
+        val otherQualification = _binding?.qualificationEditText?.text.toString()
 
         if (name.isEmpty()){
             Toast.makeText(requireContext(), "Please enter name", Toast.LENGTH_SHORT).show()
@@ -541,6 +605,13 @@ class PersonalFragment : Fragment() {
             Toast.makeText(requireContext(), "Please select qualification", Toast.LENGTH_SHORT).show()
             return false
         }
+        if (binding.spinnerQualification.selectedItemPosition == 6){
+            if (otherQualification.isEmpty()) {
+                Toast.makeText(requireContext(), "Please enter Other qualification", Toast.LENGTH_SHORT).show()
+                return false
+            }
+        }
+
         if (serviceType == 0){
             Toast.makeText(requireContext(), "Please select service type", Toast.LENGTH_SHORT).show()
             return false
@@ -555,6 +626,9 @@ class PersonalFragment : Fragment() {
                 Toast.makeText(requireContext(), "Please select provide details", Toast.LENGTH_SHORT).show()
                 return false
             }
+        } else if (typeOfWork.isEmpty()) {
+            Toast.makeText(requireContext(), "Please select Type of Worker", Toast.LENGTH_SHORT).show()
+            return false
         }
 
         if (mobile.isEmpty()){
@@ -632,16 +706,26 @@ class PersonalFragment : Fragment() {
             }}
 
         sharedViewModel.personalDetailsModel?.let { personal ->
-            response?.details?.let {
-                selectSpinnerItemByValueByList(binding.typeOfService, personal.serviceType,
-                    response?.details!!
-                )
+            val serviceDetails = response.details.filter { it.name == personal.service }
+            if (serviceDetails.isNotEmpty()) {
+                personal.service?.let { it1 ->
+                    selectSpinnerItemByValueByList(binding.typeOfService,
+                        it1,serviceDetails
+                    )
+                }
+            } else {
+                val serviceDetailss = response.details.filter { it.id.toString() == personal.service }
+                personal.service?.let { it1 ->
+                    selectSpinnerItemByValueByList(binding.typeOfService,
+                        it1,serviceDetailss
+                    )
+                }
             }
+
         }
         sharedViewModel.isRegisteredLiveData.observe(viewLifecycleOwner,::isRegisteredLiveData)
 
     }
-
 
     private fun qualificationData(response: QualificationResponse?) {
         val details = response?.details?.map { it.name }
@@ -665,8 +749,13 @@ class PersonalFragment : Fragment() {
                 val selectedItem = parent?.getItemAtPosition(position)
                 if (selectedItem?.equals("Select Qualification") == true) {
                     qualificationType = 0
-//                    Toast.makeText(requireContext(), "Please select a valid Service", Toast.LENGTH_SHORT).show();
-                } else {
+                    binding.otherQualificationTextInputLayout.visibility = View.GONE
+                } else if (selectedItem?.equals("Other") == true){
+                    qualificationType =
+                        response?.details?.filter { it.name == selectedItem }?.firstOrNull()?.id!!
+                    binding.otherQualificationTextInputLayout.visibility = View.VISIBLE
+                }else {
+                    binding.otherQualificationTextInputLayout.visibility = View.GONE
                     qualificationType =
                         response?.details?.filter { it.name == selectedItem }?.firstOrNull()?.id!!
                 }
@@ -677,15 +766,30 @@ class PersonalFragment : Fragment() {
                 // Do something when nothing is selected
             }}
 
+
         sharedViewModel.personalDetailsModel?.let { personal ->
-            response?.details?.let {
-                selectSpinnerItemByValueByList(binding.spinnerQualification, personal.qualification,
-                    response?.details!!
-                )
+            val qualificationDetails = response.details.filter { it.name == personal.qualification }
+            if (qualificationDetails.isNotEmpty()) {
+                personal.qualification?.let { it1 ->
+                    selectSpinnerItemByValueByList(binding.spinnerQualification,
+                        it1,qualificationDetails
+                    )
+                }
+            } else {
+                val qualificationDetails1 = response.details.filter { it.id.toString() == personal.qualification }
+                personal.qualification?.let { it1 ->
+                    selectSpinnerItemByValueByList(binding.spinnerQualification,
+                        it1,qualificationDetails1
+                    )
+                }
             }
+
         }
 
     }
+
+
+
 
     fun showCameraGalleryDialog(context: Context) {
         val builder = AlertDialog.Builder(context)
@@ -759,7 +863,8 @@ class PersonalFragment : Fragment() {
             vehicleType = vehicleType,
             noOfHours = _binding!!.workingDaysEditText.text.toString(),
             fatherName = _binding?.fatherEditText?.text.toString(),
-            serviceType = servieType.toString()
+            serviceType = servieType.toString(),
+            otherQualification = _binding?.qualificationEditText?.text.toString() ?: ""
         )
         findNavController().navigate(R.id.action_personalFragment_to_addressFragment)
     }

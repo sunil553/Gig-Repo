@@ -6,6 +6,7 @@ data class PersonalDetails(
     val dob: String,
     val email: String,
     val father_name: String,
+    val service: String,
     val gender: String,
     val id: Int,
     val identity_card_number: String,
@@ -14,7 +15,10 @@ data class PersonalDetails(
     val pan_number: String,
     val profile_image: String,
     val qualification: String,
+    val other_qualification : String,
     val worker_type: String,
     val working_hours: String,
-    val working_type: String
+    val working_type: String,
+    val vehicle: String
+
 )

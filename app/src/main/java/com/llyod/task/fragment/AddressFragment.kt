@@ -9,7 +9,6 @@ import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.Spinner
 import android.widget.Toast
-import androidx.compose.ui.semantics.error
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -28,10 +27,10 @@ class AddressFragment : Fragment() {
 
     private val sharedViewModel: SharedViewModel by activityViewModels()
 
-    private var  selectedState = ""
-    private var  spinnerTempState = ""
-    private var  selectedDistrict = ""
-    private var  selectedTempDistrict = ""
+    private var  selectedState = "-1"
+    private var  spinnerTempState = "-1"
+    private var  selectedDistrict = "-1"
+    private var  selectedTempDistrict = "-1"
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -43,6 +42,8 @@ class AddressFragment : Fragment() {
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        sharedViewModel.errorMessages.observe(viewLifecycleOwner,::onErrorMessage)
 
         // Restore the state of the fragment here
         sharedViewModel.addressDetailsModel?.let {
@@ -66,6 +67,10 @@ class AddressFragment : Fragment() {
 
         _binding?.next?.setOnClickListener {
             if (validateAddressFields()) {
+                var isCheckeds = isCheckBoxChecked()
+                if (selectedState != spinnerTempState ) {
+                    isCheckeds = "0"
+                }
                 sharedViewModel.saveAddressDetails(
                     binding.editTextPermanentHouseNo.text.toString(),
                     binding.editTextPermanentStreetName.text.toString(),
@@ -81,7 +86,7 @@ class AddressFragment : Fragment() {
                     binding.editTextPresentPinCode.text.toString(),
                     temp_state =  spinnerTempState,
                     temp_district = selectedTempDistrict,
-                    isCheckBoxChecked()
+                    isCheckeds
                 )
                 navigateToDetails()
             }
@@ -102,7 +107,15 @@ class AddressFragment : Fragment() {
                 binding.editTextPresentColonyArea.setText(permanentColonyArea)
                 binding.editTextPresentLandmark.setText(permanentLandMark)
                 binding.editTextPresentPinCode.setText(permanentPincode)
-                binding.spinnerTempDistrict.setSelection(permanentDistrict)
+                if (isSelectedStateTG()){
+                    try {
+                        binding.spinnerTempState.setSelection(1)
+                        binding.spinnerTempDistrict.setSelection(permanentDistrict)
+                    }catch (exception : Exception) {
+
+                    }
+
+                }
                 enableDisableView( binding.editTextPresentHouseNo, false)
                 enableDisableView( binding.editTextPresentStreetName, false)
                 enableDisableView( binding.editTextPresentColonyArea, false)
@@ -160,6 +173,15 @@ class AddressFragment : Fragment() {
 //        sharedViewModel.isNavigateLiveData.observe(viewLifecycleOwner,::navigate)
     }
 
+    private fun isSelectedStateTG(): Boolean {
+          return  selectedState == "36"
+    }
+
+    private fun onErrorMessage(errorMessage: String?) {
+        errorMessage?.let {
+            Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_SHORT).show()
+        }
+    }
     fun enableDisableView(view: EditText, isChecked: Boolean){
         view.isClickable = isChecked
         view.isFocusable = isChecked
@@ -200,16 +222,23 @@ class AddressFragment : Fragment() {
                 // Do something when nothing is selected
             }}
 
-        sharedViewModel.addressDetailsModel?.let { addressDetailModel ->
-            response.details?.let {
-                val stateDetail =  response.details?.filter { it.name == addressDetailModel.state }
-                if (stateDetail?.isNotEmpty() == true) {
-                    selectSpinnerItemByValueByList(binding.spinnerTempState,stateDetail?.firstOrNull()?.code,response?.details!!)
-                } else {
-                    val stateDetail1 = response.details.filter { it.code == addressDetailModel.state }
-                    selectSpinnerItemByValueByList(binding.spinnerTempState,stateDetail1?.firstOrNull()?.code,response?.details!!)
+        sharedViewModel.addressDetailsModel?.let { address ->
+            val addressDetails = response.details.filter { it.name == address.temp_state }
+            if (addressDetails.isNotEmpty()) {
+                address.temp_state.let { it1 ->
+                    selectSpinnerItemByValueByListTempState(binding.spinnerTempState,
+                        it1,addressDetails
+                    )
+                }
+            } else {
+                val addressDetails1 = response.details.filter { it.id.toString() == address.temp_state }
+                address.temp_state?.let { it1 ->
+                    selectSpinnerItemByValueByListTempState(binding.spinnerTempState,
+                        it1,addressDetails1
+                    )
                 }
             }
+
         } ?: run {
             districtsTempTypeData(null)
         }
@@ -265,7 +294,18 @@ class AddressFragment : Fragment() {
 
     }
 
+    private fun selectSpinnerItemByValueByListTempState(spnr: Spinner, value: String?, details: List<Detail>) {
+        try {
+            val adapter = spnr.adapter
+            for (position in 0 until adapter.count) {
+                    spnr.setSelection(1)
+                    return
+            }
+        }catch (exception : Exception){
 
+        }
+
+    }
     private fun selectSpinnerItemByValueByList(spnr: Spinner, value: String?, details: List<Detail>) {
         try {
             val adapter = spnr.adapter
@@ -306,7 +346,7 @@ class AddressFragment : Fragment() {
                 binding.editTextPresentStreetName.setText(it.temp_street_name)
                 binding.editTextPresentColonyArea.setText(it.temp_colony_area)
                 binding.editTextPresentLandmark.setText(it.temp_landmark)
-                selectSpinnerItemByValue( binding.spinnerTempState,it.temp_state)
+                selectSpinnerItemByValueState( binding.spinnerTempState,it.temp_state)
                 selectSpinnerItemByValue( binding.spinnerTempDistrict,it.temp_district)
                 binding.editTextPresentPinCode.setText(it.temp_pincode)
             }
@@ -320,6 +360,18 @@ class AddressFragment : Fragment() {
                     spnr.setSelection(position)
                     return
                 }
+            }
+        }catch (exception : Exception) {
+
+        }
+
+    }
+    private fun selectSpinnerItemByValueState(spnr: Spinner, value: String) {
+        try {
+            val adapter = spnr.adapter
+            for (position in 0 until adapter.count) {
+                    spnr.setSelection(1)
+                    return
             }
         }catch (exception : Exception) {
 
@@ -345,33 +397,8 @@ class AddressFragment : Fragment() {
 //        val selectedTempState = binding.spinnerTempState.selectedItem.toString()
 //        val selectedTempDistrict = binding.spinnerTempDistrict.selectedItem.toString()
 
-        if (selectedState == "-1" || selectedDistrict == "-1" || spinnerTempState == "-1" || selectedTempDistrict == "-1" ||
-            permanentHouseNo.isBlank() || permanentStreetName.isBlank() || permanentColonyArea.isBlank() ||
-            permanentLandmark.isBlank() || permanentPinCode.isBlank()|| presentHouseNo.isBlank() ||
-            presentStreetName.isBlank() || presentColonyArea.isBlank() || presentLandmark.isBlank() || presentPinCode.isBlank()) {
-            // Show error message or highlight empty fields
-            Toast.makeText(requireContext(), "Please fill all the fields", Toast.LENGTH_SHORT).show()
-            return false
-        }
-        if (selectedState == "-1") {
-            Toast.makeText(requireContext(), "Please select a state", Toast.LENGTH_SHORT).show()
-            return false
-        }
 
-        if (selectedDistrict == "-1") {
-            Toast.makeText(requireContext(), "Please select a district", Toast.LENGTH_SHORT).show()
-            return false
-        }
 
-        if (spinnerTempState == "-1") {
-            Toast.makeText(requireContext(), "Please select a temporary state", Toast.LENGTH_SHORT).show()
-            return false
-        }
-
-        if (selectedTempDistrict == "-1") {
-            Toast.makeText(requireContext(), "Please select a temporary district", Toast.LENGTH_SHORT).show()
-            return false
-        }
 
         if (permanentHouseNo.isBlank()) {
             Toast.makeText(requireContext(), "Please enter house number", Toast.LENGTH_SHORT).show()
@@ -393,6 +420,16 @@ class AddressFragment : Fragment() {
             Toast.makeText(requireContext(), "Please enter permanent landmark", Toast.LENGTH_SHORT).show()
             return false
         }
+        if (selectedState == "-1") {
+            Toast.makeText(requireContext(), "Please select a state", Toast.LENGTH_SHORT).show()
+            return false
+        }
+
+        if (selectedDistrict == "-1") {
+            Toast.makeText(requireContext(), "Please select a district", Toast.LENGTH_SHORT).show()
+            return false
+        }
+
 
         if (permanentPinCode.isBlank()) {
             Toast.makeText(requireContext(), "Please enter permanent pin code", Toast.LENGTH_SHORT).show()
@@ -418,7 +455,15 @@ class AddressFragment : Fragment() {
             Toast.makeText(requireContext(), "Please enter present landmark", Toast.LENGTH_SHORT).show()
             return false
         }
+        if (spinnerTempState == "-1") {
+            Toast.makeText(requireContext(), "Please select a temporary state", Toast.LENGTH_SHORT).show()
+            return false
+        }
 
+        if (selectedTempDistrict == "-1") {
+            Toast.makeText(requireContext(), "Please select a temporary district", Toast.LENGTH_SHORT).show()
+            return false
+        }
         if (presentPinCode.isBlank()) {
             Toast.makeText(requireContext(), "Please enter present pin code", Toast.LENGTH_SHORT).show()
             return false
@@ -485,6 +530,7 @@ class AddressFragment : Fragment() {
             }
 
         }
+
     }
 
     private fun districtsTypeData(response: DistrictsForStatesResponse?) {
